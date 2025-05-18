@@ -30,12 +30,12 @@ class Laporan_Upah extends CI_Controller {
         // Ambil input bulan dan tahun dari form
         if ((isset($_POST['bulan']) && $_POST['bulan'] != '') && (isset($_POST['tahun']) && $_POST['tahun'] != '')) {
             $bulan = $_POST['bulan'];
-            $tahun = $_POST['tahun'];
-            $bulantahun = $tahun . '-' . $bulan; // Format YYYY-MM
+			$tahun = $_POST['tahun'];
+			$bulantahun = $bulan . $tahun;
         } else {
             $bulan = date('m');
             $tahun = date('Y');
-            $bulantahun = $tahun . '-' . $bulan;
+            $bulantahun = $bulan . $tahun;
         }
 
         // Simpan data bulan dan tahun untuk ditampilkan di view
