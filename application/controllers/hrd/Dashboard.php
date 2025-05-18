@@ -72,7 +72,7 @@ class Dashboard extends CI_Controller {
         $data['laporan'] = $this->db->get('data_upah')->result();
         $this->load->view('template_hrd/header', $data);
         $this->load->view('template_hrd/sidebar');
-        $this->load->view('hrd/laporan_upah', $data);
+        $this->load->view('hrd/upah/laporan_upah', $data);
         $this->load->view('template_hrd/footer');
     }
 

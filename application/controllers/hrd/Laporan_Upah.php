@@ -20,7 +20,7 @@ class Laporan_Upah extends CI_Controller {
         $data['title'] = "Laporan Upah Pegawai";
         $this->load->view('template_hrd/header', $data);
         $this->load->view('template_hrd/sidebar');
-        $this->load->view('hrd/laporan_upah', $data);
+        $this->load->view('hrd/upah/laporan_upah', $data);
         $this->load->view('template_hrd/footer');
     }
 
