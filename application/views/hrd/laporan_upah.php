@@ -5,7 +5,7 @@
             Filter Laporan Upah Pegawai
         </div>
 
-        <form method="POST" action="<?php echo base_url('laporan_upah/cetak_laporan_upah') ?>">
+        <form method="POST" action="<?php echo base_url('hrd/laporan_upah/cetak_laporan_upah') ?>">
             <div class="card-body">
                 <div class="form-group row">
                     <label for="bulan" class="col-sm-3 col-form-label">Bulan</label>

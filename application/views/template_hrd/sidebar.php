@@ -11,6 +11,12 @@
                 <i class="fas fa-file-alt"></i> Laporan Upah
             </a>
         </li>
+        </li>
+        <li class="nav-item">
+            <a href="<?= base_url('hrd/cetak_upah') ?>" class="nav-link text-white">
+                <i class="fas fa-print"></i> Cetak Upah 
+            </a>
+        </li>
         <li class="nav-item">
             <a href="<?= base_url('ganti_password') ?>" class="nav-link text-white">
                 <i class="fas fa-lock"></i> Ubah Password
