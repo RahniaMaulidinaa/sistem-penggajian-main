@@ -32,7 +32,7 @@
       <li class="nav-item">
         <a class="nav-link" href="<?php echo base_url('pegawai/ganti_password') ?>">
           <i class="fas fa-fw fa-lock"></i>
-          <span>Ubah Password</span></a>
+          <span>Ganti Password</span></a>
       </li>
 
       <!-- Nav Item - Tables -->

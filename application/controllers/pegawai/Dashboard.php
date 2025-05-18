@@ -17,7 +17,7 @@ class Dashboard extends CI_Controller {
 	}
 	public function index() 
 	{
-		$data['title'] = "Dashboard";
+		$data['title'] = "Dashboard Karyawan";
 		$id=$this->session->userdata('id_pegawai');
 		$data['pegawai'] = $this->db->query("SELECT * FROM data_pegawai WHERE id_pegawai='$id'")->result();
 
