@@ -8,7 +8,7 @@
         </li>
         <li class="nav-item">
             <a href="<?= base_url('hrd/upah/laporan_upah') ?>" class="nav-link text-white">
-                <i class="fas fa-file-alt"></i> Laporan Upah
+                <i class="fas fa-file-alt"></i> Laporan Upah 
             </a>
         </li>
         </li>

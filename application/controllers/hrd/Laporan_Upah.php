@@ -17,7 +17,7 @@ class Laporan_Upah extends CI_Controller {
     }
 
     public function index() {
-        $data['title'] = "Laporan Upah Pegawai";
+        $data['title'] = "Laporan Upah Bulanan Pegawai";
         $this->load->view('template_hrd/header', $data);
         $this->load->view('template_hrd/sidebar');
         $this->load->view('hrd/upah/laporan_upah', $data);

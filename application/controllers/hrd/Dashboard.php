@@ -68,7 +68,7 @@ class Dashboard extends CI_Controller {
     }
 
     public function laporan_upah() {
-        $data['title'] = "Laporan Upah";
+        $data['title'] = "Laporan Upah Bulanan";
         $data['laporan'] = $this->db->get('data_upah')->result();
         $this->load->view('template_hrd/header', $data);
         $this->load->view('template_hrd/sidebar');
