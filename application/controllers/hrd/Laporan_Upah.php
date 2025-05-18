@@ -80,7 +80,7 @@ class Laporan_Upah extends CI_Controller {
         }
 
         // Load view untuk cetak laporan
-        $this->load->view('hrd/cetak_upah', $data);
+        $this->load->view('hrd/upah/cetak_upah', $data);
     }
 }
 ?>

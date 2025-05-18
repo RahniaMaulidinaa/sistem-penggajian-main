@@ -36,7 +36,7 @@
         <h3 class="text-center">PENGGAJIAN</h3>
         <ul class="nav flex-column">
             <li class="nav-item"><a href="<?= base_url('hrd/dashboard') ?>" class="nav-link text-white">Dashboard HRD</a></li>
-            <li class="nav-item"><a href="<?= base_url('hrd/upah/laporan_upah') ?>" class="nav-link text-white">Laporan Upah</a></li>
+            <li class="nav-item"><a href="<?= base_url('hrd/laporan_upah') ?>" class="nav-link text-white">Laporan Upah</a></li>
             <li class="nav-item"><a href="<?= base_url('hrd/ganti_password') ?>" class="nav-link text-white">Ganti Password</a></li>
             <li class="nav-item"><a href="<?= base_url('login/logout') ?>" class="nav-link text-white">Logout</a></li>
         </ul>
