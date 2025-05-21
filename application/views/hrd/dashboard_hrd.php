@@ -31,19 +31,37 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div id="sidebar">
-        <h3 class="text-center">PENGGAJIAN</h3>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a href="<?= base_url('hrd/dashboard') ?>" class="nav-link text-white">Dashboard HRD</a></li>
-            <li class="nav-item"><a href="<?= base_url('hrd/laporan_upah') ?>" class="nav-link text-white">Laporan Upah Bulanan</a></li>
-            <li class="nav-item"><a href="<?= base_url('hrd/laporan_upah_borongan') ?>" class="nav-link text-white">Laporan Upah Borongan</a></li>
 
-            <li class="nav-item"><a href="<?= base_url('hrd/ganti_password') ?>" class="nav-link text-white">Ganti Password</a></li>
-            <li class="nav-item"><a href="<?= base_url('login/logout') ?>" class="nav-link text-white">Logout</a></li>
-        </ul>
-    </div>
-
+   <!-- Sidebar -->
+<div id="sidebar" class="position-fixed">
+    <ul class="nav flex-column pt-4">
+        <li class="nav-item">
+            <a href="<?= base_url('hrd/dashboard') ?>" class="nav-link text-white">
+                <i class="fas fa-tachometer-alt mr-2"></i> Dashboard HRD
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="<?= base_url('hrd/laporan_upah') ?>" class="nav-link text-white">
+                <i class="fas fa-file-invoice-dollar mr-2"></i> Laporan Upah Bulanan
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="<?= base_url('hrd/laporan_upah_borongan') ?>" class="nav-link text-white">
+                <i class="fas fa-clipboard-list mr-2"></i> Laporan Upah Borongan
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="<?= base_url('hrd/ganti_password') ?>" class="nav-link text-white">
+                <i class="fas fa-key mr-2"></i> Ganti Password
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="<?= base_url('login/logout') ?>" class="nav-link text-white">
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </a>
+        </li>
+    </ul>
+</div>
     <!-- Content -->
     <div id="content">
         <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
