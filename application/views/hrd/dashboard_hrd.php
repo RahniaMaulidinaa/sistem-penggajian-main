@@ -8,17 +8,17 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
     <style>
         #sidebar {
-            width: 250px;
+            width: 220px;
             position: fixed;
             top: 0;
             left: 0;
             height: 100vh;
             background-color: #0056b3;
             color: white;
-            padding-top: 20px;
+            padding-top: 80px;
         }
         #content {
-            margin-left: 250px;
+            margin-left: 230px;
             padding: 20px;
         }
         .card {
@@ -64,13 +64,7 @@
 </div>
     <!-- Content -->
     <div id="content">
-        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-            <h4 class="font-weight-bold">KONVEKSI KAMPOENG BUSANA</h4>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item dropdown no-arrow">
-                    <a class="nav-link dropdown-toggle" href="#">
-                        <span class="mr-2 d-none d-lg-inline text-gray-600 small">Selamat Datang <?= $this->session->userdata('nama_pegawai') ?></span>
-                        <img class="img-profile rounded-circle" src="<?= base_url('photo/') . $this->session->userdata('photo') ?>">
+           
                     </a>
                 </li>
             </ul>
