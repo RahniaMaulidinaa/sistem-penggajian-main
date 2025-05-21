@@ -205,9 +205,9 @@
                      <div class="card">
                         <div class="CardImage"><img src="<?php echo base_url(); ?>assets/img/others-fitur.svg"></div>
                         <div class="body">
-                           <div class="title">Fitur Lainnya</div>
+                           <div class="title">Halaman HRD</div>
                            <div id="flip4">Read More</div>
-                           <div id="panel4">Cetak slip gaji, lupa password, login karyawan</div>
+                           <div id="panel4">HRD dapat menggunakan website untuk Melihat laporan upah borongan dan bulanan.</div>
                         </div>
                      </div>
                   </div>
