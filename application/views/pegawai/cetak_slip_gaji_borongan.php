@@ -106,7 +106,7 @@
 <body>
     <div class="container">
         <h1>KONVEKSI KAMPOENG BUSANA</h1>
-        <h2>Slip Gaji Pegawai Borongan</h2>
+        <h2>Slip Gaji Pegawai borongan</h2>
         <hr>
 
         <?php if ($print_slip) : ?>
@@ -152,25 +152,45 @@
                 <th>Potongan</th>
             </tr>
             <tr>
-                <td>Target Produksi</td>
-                <td><?php echo $print_slip->target_mingguan ?? 0 ?> unit</td>
+                <td>Total Produksi</td>
+                <td><?php echo $print_slip->total_produksi ?? 0 ?> unit</td>
                 <td rowspan="2">
                     Potongan (Alpha: <?php echo $print_slip->alpha ?? 0 ?> hari): 
-                    <?php $potongan_gaji = ($print_slip->alpha ?? 0) * (!empty($potongan) ? ($potongan[0]->jml_potongan ?? 0) : 0); ?>
+                    <?php 
+                    $potongan_gaji = 0;
+                    if (!empty($potongan) && isset($potongan[0]->jml_potongan)) {
+                        $potongan_gaji = ($print_slip->alpha ?? 0) * $potongan[0]->jml_potongan;
+                    }
+                    ?>
                     Rp. <?php echo number_format($potongan_gaji, 0, ',', '.') ?>
                 </td>
             </tr>
             <tr>
-                <td>Tarif Borongan</td>
+                <td>Tarif borongan</td>
                 <td>Rp. <?php echo number_format($print_slip->tarif_borongan ?? 0, 0, ',', '.') ?></td>
+            </tr>
+            <tr>
+                <td>Gaji Pokok</td>
+                <td>Rp. <?php echo number_format($print_slip->gaji_pokok ?? 0, 0, ',', '.') ?></td>
+            </tr>
+            <tr>
+                <td>Tj. Transport</td>
+                <td>Rp. <?php echo number_format($print_slip->tj_transport ?? 0, 0, ',', '.') ?></td>
+            </tr>
+            <tr>
+                <td>Uang Makan</td>
+                <td>Rp. <?php echo number_format($print_slip->uang_makan ?? 0, 0, ',', '.') ?></td>
             </tr>
             <tr class="total">
                 <td>Total Pendapatan</td>
                 <td colspan="2">
                     <?php 
-                    $target = $print_slip->target_mingguan ?? 0;
+                    $total_produksi = $print_slip->total_produksi ?? 0;
                     $tarif = $print_slip->tarif_borongan ?? 0;
-                    $total_gaji = ($target * $tarif) - $potongan_gaji;
+                    $gaji_pokok = $print_slip->gaji_pokok ?? 0;
+                    $tj_transport = $print_slip->tj_transport ?? 0;
+                    $uang_makan = $print_slip->uang_makan ?? 0;
+                    $total_gaji = ($total_produksi * $tarif) + $gaji_pokok + $tj_transport + $uang_makan - $potongan_gaji;
                     ?>
                     Rp. <?php echo number_format($total_gaji, 0, ',', '.') ?>
                 </td>
