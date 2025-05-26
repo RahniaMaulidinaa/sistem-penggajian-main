@@ -151,27 +151,31 @@
                 <th>Potongan</th>
             </tr>
             <tr>
-                <td>Target Produksi</td>
-                <td><?php echo $slip_gaji->target_mingguan ?? 0 ?> unit</td>
+                <td>Total Produksi Mingguan</td>
+                <td><?php echo $slip_gaji->total_produksi ?? 0 ?> unit</td>
                 <td rowspan="2">
-                    Potongan (Alpha: <?php echo $slip_gaji->alpha ?> hari): 
-                    <?php $potongan_gaji = $slip_gaji->alpha * ($potongan[0]->jml_potongan ?? 0); ?>
-                    Rp. <?php echo number_format($potongan_gaji, 0, ',', '.') ?>
+                    Potongan (Alpha: <?php echo $slip_gaji->alpha ?? 0 ?> hari): 
+                    <?php 
+                    $potongan_gaji = 0;
+                    if (!empty($potongan) && isset($potongan[0]->jml_potongan)) {
+                        $potongan_gaji = ($slip_gaji->alpha ?? 0) * $potongan[0]->jml_potongan;
+                    }
+                    ?>
+                    Rp. <?php echo number_format($potongan_gaji, 0, ',', '.'); ?>
                 </td>
             </tr>
             <tr>
-                <td>Tarif Borongan</td>
-                <td>Rp. <?php echo number_format($slip_gaji->tarif_borongan ?? 10000, 0, ',', '.') ?></td>
+                <td>Tarif borongan</td>
+                <td>Rp. <?php echo number_format($slip_gaji->tarif_borongan ?? 0, 0, ',', '.'); ?></td>
             </tr>
             <tr class="total">
                 <td>Total Pendapatan</td>
                 <td colspan="2">
                     <?php 
-                    $target = $slip_gaji->target_mingguan ?? 0;
-                    $tarif = $slip_gaji->tarif_borongan ?? 10000;
-                    $total_gaji = ($target * $tarif) - $potongan_gaji;
+                    $total_pendapatan = ($slip_gaji->total_produksi ?? 0) * ($slip_gaji->tarif_borongan ?? 0);
+                    $total_gaji = $total_pendapatan - $potongan_gaji;
                     ?>
-                    Rp. <?php echo number_format($total_gaji, 0, ',', '.') ?>
+                    Rp. <?php echo number_format($total_gaji, 0, ',', '.'); ?>
                 </td>
             </tr>
         </table>

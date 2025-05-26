@@ -27,14 +27,44 @@ class Data_Penggajian_Borongan extends CI_Controller {
             $minggu = 1;
             $bulantahun = $bulan . $tahun;
         }
+
+        // Calculate the start and end dates for the selected week
+        $start_day = ($minggu - 1) * 7 + 1; // Start day of the week (e.g., 1, 8, 15, 22)
+        $end_day = $start_day + 6; // End day of the week (e.g., 7, 14, 21, 28)
+
+        // Adjust end_day to not exceed the last day of the month
+        $last_day_of_month = date('t', strtotime("$tahun-$bulan-01"));
+        if ($end_day > $last_day_of_month) {
+            $end_day = $last_day_of_month;
+        }
+
+        $start_date = "$tahun-$bulan-" . str_pad($start_day, 2, '0', STR_PAD_LEFT);
+        $end_date = "$tahun-$bulan-" . str_pad($end_day, 2, '0', STR_PAD_LEFT);
+
+        // Log the date range for debugging
+        log_message('info', "Date range for minggu $minggu: $start_date to $end_date");
+
         $data['potongan'] = $this->ModelPenggajian->get_data('potongan_gaji')->result();
+        // Query dengan subquery untuk total produksi mingguan berdasarkan rentang tanggal
         $data['gaji'] = $this->db->query("
-            SELECT DISTINCT data_pegawai.nik, data_pegawai.nama_pegawai,
-                data_pegawai.jenis_kelamin, data_jabatan.nama_jabatan, 
-                data_jabatan.gaji_pokok, data_jabatan.tj_transport, 
-                data_jabatan.uang_makan, data_jabatan.jenis_gaji, 
-                data_jabatan.tarif_borongan, data_kehadiran.alpha,
-                target_mingguan.target_mingguan
+            SELECT DISTINCT 
+                data_pegawai.id_pegawai, -- Ditambahkan untuk logging
+                data_pegawai.nik, 
+                data_pegawai.nama_pegawai,
+                data_pegawai.jenis_kelamin, 
+                data_jabatan.nama_jabatan, 
+                data_jabatan.gaji_pokok, 
+                data_jabatan.tj_transport, 
+                data_jabatan.uang_makan, 
+                data_jabatan.jenis_gaji, 
+                data_jabatan.tarif_borongan, 
+                data_kehadiran.alpha,
+                COALESCE((
+                    SELECT SUM(ph.jumlah_unit) 
+                    FROM produksi_harian ph 
+                    WHERE ph.id_pegawai = data_pegawai.id_pegawai
+                    AND ph.tanggal BETWEEN '$start_date' AND '$end_date'
+                ), 0) as total_produksi
             FROM data_pegawai
             INNER JOIN (
                 SELECT nik, bulan, MAX(alpha) as alpha
@@ -43,20 +73,19 @@ class Data_Penggajian_Borongan extends CI_Controller {
                 GROUP BY nik, bulan
             ) data_kehadiran ON data_kehadiran.nik = data_pegawai.nik
             INNER JOIN data_jabatan ON data_jabatan.nama_jabatan = data_pegawai.jabatan
-            LEFT JOIN (
-                SELECT nik_pegawai, bulan_target, tahun_target, mingguke, MAX(target_mingguan) as target_mingguan
-                FROM target_mingguan
-                WHERE bulan_target = '$bulan' AND tahun_target = '$tahun' AND mingguke = '$minggu'
-                GROUP BY nik_pegawai, bulan_target, tahun_target, mingguke
-            ) target_mingguan ON target_mingguan.nik_pegawai = data_pegawai.nik
             WHERE data_jabatan.jenis_gaji = 'Borongan'
             ORDER BY data_pegawai.nama_pegawai ASC
         ")->result();
-        $data['target'] = $this->db->query("SELECT * FROM target_mingguan 
-            WHERE bulan_target = '$bulan' AND tahun_target = '$tahun' AND mingguke = '$minggu'")->result();
+
+        // Log the gaji data for debugging
+        foreach ($data['gaji'] as $g) {
+            log_message('info', "Pegawai: {$g->nama_pegawai}, NIK: {$g->nik}, ID Pegawai: {$g->id_pegawai}, Total Produksi: {$g->total_produksi}");
+        }
+
         $data['bulan'] = $bulan;
         $data['tahun'] = $tahun;
         $data['minggu'] = $minggu;
+
         $this->load->view('template_admin/header', $data);
         $this->load->view('template_admin/sidebar');
         $this->load->view('admin/gaji/data_gaji_borongan', $data);
@@ -76,16 +105,40 @@ class Data_Penggajian_Borongan extends CI_Controller {
             $minggu = 1;
             $bulantahun = $bulan . $tahun;
         }
-        
+
+        // Calculate the start and end dates for the selected week
+        $start_day = ($minggu - 1) * 7 + 1;
+        $end_day = $start_day + 6;
+
+        $last_day_of_month = date('t', strtotime("$tahun-$bulan-01"));
+        if ($end_day > $last_day_of_month) {
+            $end_day = $last_day_of_month;
+        }
+
+        $start_date = "$tahun-$bulan-" . str_pad($start_day, 2, '0', STR_PAD_LEFT);
+        $end_date = "$tahun-$bulan-" . str_pad($end_day, 2, '0', STR_PAD_LEFT);
+
         $data['bulan'] = $bulan;
         $data['tahun'] = $tahun;
         $data['minggu'] = $minggu;
         $data['potongan'] = $this->ModelPenggajian->get_data('potongan_gaji')->result();
         $data['cetak_gaji'] = $this->db->query("
-            SELECT DISTINCT data_pegawai.nik, data_pegawai.nama_pegawai,
-                data_pegawai.jenis_kelamin, data_jabatan.nama_jabatan, 
-                data_jabatan.tarif_borongan, target_mingguan.target_mingguan,
-                data_kehadiran.alpha
+            SELECT DISTINCT 
+                data_pegawai.nik, 
+                data_pegawai.nama_pegawai,
+                data_pegawai.jenis_kelamin, 
+                data_jabatan.nama_jabatan, 
+                data_jabatan.gaji_pokok, 
+                data_jabatan.tarif_borongan, 
+                data_jabatan.tj_transport, 
+                data_jabatan.uang_makan, 
+                data_kehadiran.alpha,
+                COALESCE((
+                    SELECT SUM(ph.jumlah_unit) 
+                    FROM produksi_harian ph 
+                    WHERE ph.id_pegawai = data_pegawai.id_pegawai
+                    AND ph.tanggal BETWEEN '$start_date' AND '$end_date'
+                ), 0) as total_produksi
             FROM data_pegawai
             INNER JOIN (
                 SELECT nik, bulan, MAX(alpha) as alpha
@@ -94,36 +147,10 @@ class Data_Penggajian_Borongan extends CI_Controller {
                 GROUP BY nik, bulan
             ) data_kehadiran ON data_kehadiran.nik = data_pegawai.nik
             INNER JOIN data_jabatan ON data_jabatan.nama_jabatan = data_pegawai.jabatan
-            LEFT JOIN (
-                SELECT nik_pegawai, bulan_target, tahun_target, mingguke, MAX(target_mingguan) as target_mingguan
-                FROM target_mingguan
-                WHERE bulan_target = '$bulan' AND tahun_target = '$tahun' AND mingguke = '$minggu'
-                GROUP BY nik_pegawai, bulan_target, tahun_target, mingguke
-            ) target_mingguan ON target_mingguan.nik_pegawai = data_pegawai.nik
             WHERE data_jabatan.jenis_gaji = 'Borongan'
             ORDER BY data_pegawai.nama_pegawai ASC
         ")->result();
         
         $this->load->view('admin/gaji/cetak_gaji_borongan', $data);
-    }
-
-    public function simpan_target() {
-        $nik = $this->input->post('nik');
-        $minggu = $this->input->post('minggu');
-        $bulan = $this->input->post('bulan');
-        $tahun = $this->input->post('tahun');
-        $target = $this->input->post('target_mingguan');
-        
-        $data = array(
-            'nik_pegawai' => $nik,
-            'mingguke' => $minggu,
-            'bulan_target' => $bulan,
-            'tahun_target' => $tahun,
-            'target_mingguan' => $target
-        );
-
-        $this->ModelPenggajian->insert_data($data, 'target_mingguan');
-        
-        redirect('admin/data_penggajian_borongan?bulan=' . $bulan . '&tahun=' . $tahun . '&minggu=' . $minggu);
     }
 }

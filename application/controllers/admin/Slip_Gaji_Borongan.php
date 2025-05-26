@@ -39,6 +39,16 @@ class Slip_Gaji_Borongan extends CI_Controller {
         $minggu = $this->input->post('minggu');
         $bulantahun = $bulan . $tahun;
 
+        // Calculate the start and end dates for the selected week
+        $start_day = ($minggu - 1) * 7 + 1;
+        $end_day = $start_day + 6;
+        $last_day_of_month = date('t', strtotime("$tahun-$bulan-01"));
+        if ($end_day > $last_day_of_month) {
+            $end_day = $last_day_of_month;
+        }
+        $start_date = "$tahun-$bulan-" . str_pad($start_day, 2, '0', STR_PAD_LEFT);
+        $end_date = "$tahun-$bulan-" . str_pad($end_day, 2, '0', STR_PAD_LEFT);
+
         $data['bulan'] = $bulan;
         $data['tahun'] = $tahun;
         $data['minggu'] = $minggu;
@@ -47,7 +57,13 @@ class Slip_Gaji_Borongan extends CI_Controller {
             SELECT data_pegawai.nik, data_pegawai.nama_pegawai,
                 data_pegawai.jenis_kelamin, data_jabatan.nama_jabatan,
                 data_jabatan.tarif_borongan, target_mingguan.target_mingguan,
-                data_kehadiran.alpha
+                data_kehadiran.alpha,
+                COALESCE((
+                    SELECT SUM(ph.jumlah_unit) 
+                    FROM produksi_harian ph 
+                    WHERE ph.id_pegawai = data_pegawai.id_pegawai
+                    AND ph.tanggal BETWEEN '$start_date' AND '$end_date'
+                ), 0) as total_produksi
             FROM data_pegawai
             INNER JOIN (
                 SELECT nik, bulan, MAX(alpha) as alpha
