@@ -40,7 +40,7 @@ class Produksi_harian extends CI_Controller {
     
         $this->db->insert('produksi_harian', $data); // atau gunakan model jika pakai model
     
-        redirect('produksi_harian'); // redirect ke halaman data produksi
+        redirect('admin/produksi_harian'); // redirect ke halaman data produksi
     }
 }
 ?>

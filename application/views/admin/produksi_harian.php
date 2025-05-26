@@ -10,7 +10,7 @@
       <h6 class="m-0 font-weight-bold text-primary">Tambah Data Produksi Harian</h6>
     </div>
     <div class="card-body">
-    <form action="<?php echo base_url('produksi_harian/tambah'); ?>" method="post">
+    <form action="<?php echo base_url('admin/produksi_harian/tambah'); ?>" method="post">
     
         <div class="form-group">
           <label for="id_pegawai">Nama Pegawai</label>
