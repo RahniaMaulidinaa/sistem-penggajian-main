@@ -18,7 +18,7 @@ class Data_Absensi extends CI_Controller {
 	
 	public function index() 
 	{
-		$data['title'] = "Data Absensi Pegawai";
+		$data['title'] = "Data Kehadiran Pegawai";
 
 		if((isset($_GET['bulan']) && $_GET['bulan']!='') && (isset($_GET['tahun']) && $_GET['tahun']!='')){
 			$bulan = $_GET['bulan'];

@@ -153,10 +153,10 @@
           </div>
           <div class="mt-4 text-center small">
             <span class="mr-2">
-              <i class="fas fa-circle text-primary"></i> Karyawan Tetap
+              <i class="fas fa-circle text-primary"></i> Pegawai Tetap
             </span>
             <span class="mr-2">
-              <i class="fas fa-circle text-success"></i> Karyawan Iidak Tetap
+              <i class="fas fa-circle text-success"></i> Pegawai Tidak Tetap
             </span>
           </div>
         </div>

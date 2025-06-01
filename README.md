@@ -1,5 +1,5 @@
-# Sistem Penggajian Karyawan
-    Merupakan sistem penggajian karyawan yang dibuat untuk memenuhi project portofolio.
+# Sistem Penggajian pegawai
+    Merupakan sistem penggajian pegawai yang dibuat untuk memenuhi project portofolio.
     Sistem ini dibuat dengan menggunakan codeignener 3.
 
 ##  Siapa yang membuat sistem ini?
@@ -20,17 +20,17 @@
 ## Fitur Admin
 
 ```
-- 1. CRUD Data Karyawan
+- 1. CRUD Data pegawai
 - 2. CRUD Data Jabatan
 - 3. Setting Potongan Gaji
-- 4. Tambah Data Absensi Karyawan
+- 4. Tambah Data Absensi pegawai
 - 5. Data Gaji
 - 6. Laporan Gaji
 - 7. Laporan Absensi
 - 8. Cetak Slip Gaji
 ```
 
-## Fitur Karyawan
+## Fitur pegawai
 
 ```
 - 1. Cetak Slip Gaji

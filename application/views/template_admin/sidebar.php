@@ -44,7 +44,7 @@
         </a>
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="<?php echo base_url('admin/data_absensi') ?>">Data Absensi</a>
+            <a class="collapse-item" href="<?php echo base_url('admin/data_absensi') ?>">Data Kehadiran</a>
             <a class="collapse-item" href="<?php echo base_url('admin/potongan_gaji') ?>">Setting Potongan Gaji</a>
             <a class="collapse-item" href="<?php echo base_url('admin/data_penggajian') ?>">Data Gaji Bulanan</a>
             <a class="collapse-item" href="<?php echo base_url('admin/data_penggajian_borongan') ?>">Data Gaji Borongan</a>
@@ -62,7 +62,7 @@
           <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="<?php echo base_url('admin/laporan_gaji') ?>">Laporan Gaji Bulanan</a>
             <a class="collapse-item" href="<?php echo base_url('admin/laporan_gaji_borongan') ?>">Laporan Gaji Borongan</a>
-            <a class="collapse-item" href="<?php echo base_url('admin/laporan_absensi') ?>">Laporan Absensi</a>
+            <a class="collapse-item" href="<?php echo base_url('admin/laporan_absensi') ?>">Laporan Kehadiran</a>
             <a class="collapse-item" href="<?php echo base_url('admin/slip_gaji_bulanan') ?>">Slip Gaji Bulanan</a>
             <a class="collapse-item" href="<?php echo base_url('admin/slip_gaji_borongan') ?>">Slip Gaji Borongan</a>
           </div>

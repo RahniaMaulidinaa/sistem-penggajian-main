@@ -21,7 +21,7 @@ class Data_Gaji extends CI_Controller {
         $nik = $this->session->userdata('nik');
         $data['potongan'] = $this->ModelPenggajian->get_data('potongan_gaji')->result();
 
-        // Cek jenis gaji pegawai dengan pengecekan lebih aman
+        // Cek jenis gaji pegawai
         $this->db->select('data_jabatan.jenis_gaji');
         $this->db->from('data_pegawai');
         $this->db->join('data_jabatan', 'data_jabatan.nama_jabatan = data_pegawai.jabatan');
@@ -31,53 +31,86 @@ class Data_Gaji extends CI_Controller {
 
         if ($data['is_borongan']) {
             // Gaji borongan
-            $this->db->select('data_pegawai.nik, data_pegawai.nama_pegawai, data_pegawai.id_pegawai, data_jabatan.gaji_pokok, data_jabatan.tj_transport, data_jabatan.uang_makan, data_jabatan.tarif_borongan, target_mingguan.id, target_mingguan.target_mingguan, target_mingguan.bulan_target, target_mingguan.tahun_target, target_mingguan.mingguke, data_kehadiran.alpha');
+            $this->db->select('data_pegawai.nik, data_pegawai.nama_pegawai, data_pegawai.id_pegawai, data_jabatan.gaji_pokok, data_jabatan.tj_transport, data_jabatan.uang_makan, data_jabatan.tarif_borongan, target_mingguan.id, target_mingguan.target_mingguan, target_mingguan.bulan_target, target_mingguan.tahun_target, target_mingguan.mingguke, COALESCE(data_kehadiran.alpha, 0) as alpha');
             $this->db->from('data_pegawai');
             $this->db->join('data_jabatan', 'data_jabatan.nama_jabatan = data_pegawai.jabatan');
-            $this->db->join('target_mingguan', 'target_mingguan.nik_pegawai = data_pegawai.nik', 'left');
-            $this->db->join('data_kehadiran', 'data_kehadiran.nik = data_pegawai.nik AND data_kehadiran.bulan = CONCAT(target_mingguan.bulan_target, target_mingguan.tahun_target)', 'left');
+            $this->db->join('target_mingguan', 'target_mingguan.nik_pegawai = data_pegawai.nik');
+            $this->db->join('data_kehadiran', 'data_kehadiran.nik = data_pegawai.nik AND data_kehadiran.bulan = CONCAT(LPAD(target_mingguan.bulan_target, 2, "0"), target_mingguan.tahun_target)', 'left');
             $this->db->where('data_pegawai.nik', $nik);
-            $this->db->order_by('target_mingguan.tahun_target ASC, target_mingguan.bulan_target ASC, target_mingguan.mingguke ASC'); // Ubah urutan ke ASC
+            $this->db->group_by('target_mingguan.id, target_mingguan.bulan_target, target_mingguan.tahun_target, target_mingguan.mingguke');
+            $this->db->order_by('target_mingguan.tahun_target DESC, target_mingguan.bulan_target DESC, target_mingguan.mingguke DESC');
             $gaji_result = $this->db->get()->result();
 
-            // Tambahkan total_produksi dan filter hanya entri dengan total_produksi > 0
+            // Tambahkan total_produksi dan filter hanya yang > 0
             $data['gaji'] = [];
             foreach ($gaji_result as $g) {
-                $bulan = $g->bulan_target;
+                $bulan = str_pad($g->bulan_target, 2, '0', STR_PAD_LEFT);
                 $tahun = $g->tahun_target;
                 $minggu = $g->mingguke;
-                $start_day = ($minggu - 1) * 7 + 1;
-                $end_day = $start_day + 6;
-                $last_day_of_month = date('t', strtotime("$tahun-$bulan-01"));
-                if ($end_day > $last_day_of_month) {
-                    $end_day = $last_day_of_month;
-                }
-                $start_date = "$tahun-$bulan-" . str_pad($start_day, 2, '0', STR_PAD_LEFT);
-                $end_date = "$tahun-$bulan-" . str_pad($end_day, 2, '0', STR_PAD_LEFT);
 
+                // Hitung rentang tanggal minggu dengan lebih akurat
+                $first_day_of_month = new DateTime("$tahun-$bulan-01");
+                $start_date = clone $first_day_of_month;
+                $start_date->modify('+' . (($minggu - 1) * 7) . ' days');
+                $end_date = clone $start_date;
+                $end_date->modify('+6 days');
+                $last_day_of_month = (new DateTime("$tahun-$bulan-01"))->modify('last day of this month');
+                if ($end_date > $last_day_of_month) {
+                    $end_date = $last_day_of_month;
+                }
+
+                $start_date_str = $start_date->format('Y-m-d');
+                $end_date_str = $end_date->format('Y-m-d');
+
+                // Log id_pegawai untuk debug
+                log_message('info', "Checking id_pegawai: {$g->id_pegawai} for NIK: {$nik}");
+
+                // Ambil total produksi
                 $this->db->select('COALESCE(SUM(jumlah_unit), 0) as total_produksi');
                 $this->db->from('produksi_harian');
                 $this->db->where('id_pegawai', $g->id_pegawai);
-                $this->db->where("tanggal BETWEEN '$start_date' AND '$end_date'");
-                $total_produksi = $this->db->get()->row()->total_produksi;
+                $this->db->where("tanggal BETWEEN '$start_date_str' AND '$end_date_str'");
+                $produksi_query = $this->db->get();
+                $total_produksi = $produksi_query->row()->total_produksi;
                 $g->total_produksi = $total_produksi;
 
-                // Logging untuk debugging
-                log_message('info', "NIK: {$nik}, Periode: $bulan-$tahun Minggu ke-$minggu, Total Produksi: $total_produksi, Date Range: $start_date to $end_date");
+                // Query terpisah untuk logging detail produksi
+                $this->db->select('tanggal, jumlah_unit');
+                $this->db->from('produksi_harian');
+                $this->db->where('id_pegawai', $g->id_pegawai);
+                $this->db->where("tanggal BETWEEN '$start_date_str' AND '$end_date_str'");
+                $produksi_detail = $this->db->get();
+
+                // Log detail produksi
+                if ($produksi_detail->num_rows() > 0) {
+                    foreach ($produksi_detail->result() as $row) {
+                        log_message('info', "Produksi ditemukan: id_pegawai: {$g->id_pegawai}, tanggal: {$row->tanggal}, jumlah_unit: {$row->jumlah_unit}");
+                    }
+                } else {
+                    log_message('info', "Tidak ada data produksi untuk id_pegawai: {$g->id_pegawai}, rentang: $start_date_str to $end_date_str");
+                }
+
+                // Logging untuk debug
+                log_message('info', "NIK: {$nik}, Periode: $bulan-$tahun Minggu ke-$minggu, Total Produksi: $total_produksi, Date Range: $start_date_str to $end_date_str, Target ID: {$g->id}");
 
                 // Hanya tambahkan entri jika total_produksi > 0
                 if ($total_produksi > 0) {
                     $data['gaji'][] = $g;
+                } else {
+                    log_message('info', "Periode $bulan-$tahun Minggu ke-$minggu untuk NIK {$nik} tidak ditampilkan karena total_produksi = 0");
                 }
             }
+
+            // Log jumlah periode yang ditampilkan
+            log_message('info', 'Jumlah periode gaji borongan untuk NIK ' . $nik . ' setelah filter (produksi > 0): ' . count($data['gaji']));
         } else {
-            // Gaji bulanan
+            // Gaji bulanan (tetap tidak diubah)
             $this->db->select('data_pegawai.nik, data_pegawai.nama_pegawai, data_jabatan.gaji_pokok, data_jabatan.tj_transport, data_jabatan.uang_makan, data_kehadiran.alpha, data_kehadiran.bulan, data_kehadiran.id_kehadiran');
             $this->db->from('data_pegawai');
             $this->db->join('data_kehadiran', 'data_kehadiran.nik = data_pegawai.nik');
             $this->db->join('data_jabatan', 'data_jabatan.nama_jabatan = data_pegawai.jabatan');
             $this->db->where('data_pegawai.nik', $nik);
-            $this->db->order_by('data_kehadiran.bulan ASC');
+            $this->db->order_by('data_kehadiran.bulan DESC');
             $data['gaji'] = $this->db->get()->result();
         }
 
@@ -92,7 +125,7 @@ class Data_Gaji extends CI_Controller {
         $nik = $this->session->userdata('nik');
         $data['potongan'] = $this->ModelPenggajian->get_data('potongan_gaji')->result();
 
-        // Cek jenis gaji dengan pengecekan lebih aman
+        // Cek jenis gaji
         $this->db->select('data_jabatan.jenis_gaji');
         $this->db->from('data_pegawai');
         $this->db->join('data_jabatan', 'data_jabatan.nama_jabatan = data_pegawai.jabatan');
@@ -102,39 +135,57 @@ class Data_Gaji extends CI_Controller {
 
         if ($data['is_borongan']) {
             // Slip borongan
-            $this->db->select('data_pegawai.nik, data_pegawai.nama_pegawai, data_pegawai.id_pegawai, data_jabatan.nama_jabatan, data_jabatan.gaji_pokok, data_jabatan.tj_transport, data_jabatan.uang_makan, data_jabatan.tarif_borongan, target_mingguan.target_mingguan, target_mingguan.bulan_target, target_mingguan.tahun_target, target_mingguan.mingguke, data_kehadiran.alpha');
+            $this->db->select('data_pegawai.nik, data_pegawai.nama_pegawai, data_pegawai.id_pegawai, data_jabatan.nama_jabatan, data_jabatan.gaji_pokok, data_jabatan.tj_transport, data_jabatan.uang_makan, data_jabatan.tarif_borongan, target_mingguan.target_mingguan, target_mingguan.bulan_target, target_mingguan.tahun_target, target_mingguan.mingguke, COALESCE(data_kehadiran.alpha, 0) as alpha');
             $this->db->from('data_pegawai');
             $this->db->join('data_jabatan', 'data_jabatan.nama_jabatan = data_pegawai.jabatan');
-            $this->db->join('target_mingguan', 'target_mingguan.nik_pegawai = data_pegawai.nik', 'left');
+            $this->db->join('target_mingguan', 'target_mingguan.nik_pegawai = data_pegawai.nik');
             $this->db->join('data_kehadiran', 'data_kehadiran.nik = data_pegawai.nik AND data_kehadiran.bulan = CONCAT(LPAD(target_mingguan.bulan_target, 2, "0"), target_mingguan.tahun_target)', 'left');
             $this->db->where('data_pegawai.nik', $nik);
             $this->db->where('target_mingguan.id', $id);
+            $this->db->group_by('target_mingguan.id, target_mingguan.bulan_target, target_mingguan.tahun_target, target_mingguan.mingguke');
             $data['print_slip'] = $this->db->get()->row();
 
             if ($data['print_slip']) {
-                // Calculate date range for the week
-                $bulan = $data['print_slip']->bulan_target;
+                // Hitung rentang tanggal
+                $bulan = str_pad($data['print_slip']->bulan_target, 2, '0', STR_PAD_LEFT);
                 $tahun = $data['print_slip']->tahun_target;
                 $minggu = $data['print_slip']->mingguke;
-                $start_day = ($minggu - 1) * 7 + 1;
-                $end_day = $start_day + 6;
-                $last_day_of_month = date('t', strtotime("$tahun-$bulan-01"));
-                if ($end_day > $last_day_of_month) {
-                    $end_day = $last_day_of_month;
-                }
-                $start_date = "$tahun-$bulan-" . str_pad($start_day, 2, '0', STR_PAD_LEFT);
-                $end_date = "$tahun-$bulan-" . str_pad($end_day, 2, '0', STR_PAD_LEFT);
 
-                // Add total_produksi
+                // Hitung rentang tanggal minggu dengan lebih akurat
+                $first_day_of_month = new DateTime("$tahun-$bulan-01");
+                $start_date = clone $first_day_of_month;
+                $start_date->modify('+' . (($minggu - 1) * 7) . ' days');
+                $end_date = clone $start_date;
+                $end_date->modify('+6 days');
+                $last_day_of_month = (new DateTime("$tahun-$bulan-01"))->modify('last day of this month');
+                if ($end_date > $last_day_of_month) {
+                    $end_date = $last_day_of_month;
+                }
+
+                $start_date_str = $start_date->format('Y-m-d');
+                $end_date_str = $end_date->format('Y-m-d');
+
+                // Ambil total produksi
                 $this->db->select('COALESCE(SUM(jumlah_unit), 0) as total_produksi');
                 $this->db->from('produksi_harian');
                 $this->db->where('id_pegawai', $data['print_slip']->id_pegawai);
-                $this->db->where("tanggal BETWEEN '$start_date' AND '$end_date'");
+                $this->db->where("tanggal BETWEEN '$start_date_str' AND '$end_date_str'");
                 $total_produksi_result = $this->db->get()->row();
                 $data['print_slip']->total_produksi = $total_produksi_result->total_produksi;
 
-                // Debug: Log the data
-                log_message('info', "Slip for NIK: {$data['print_slip']->nik}, Total Produksi: {$data['print_slip']->total_produksi}, Tarif Borangan: {$data['print_slip']->tarif_borongan}");
+                // Cek apakah total_produksi > 0 untuk slip
+                if ($data['print_slip']->total_produksi == 0) {
+                    $this->session->set_flashdata('pesan', '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Data slip gaji tidak dapat dicetak karena total produksi 0!</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                        </button>
+                        </div>');
+                    redirect('pegawai/data_gaji');
+                }
+
+                // Debug
+                log_message('info', "Slip for NIK: {$data['print_slip']->nik}, Total Produksi: {$data['print_slip']->total_produksi}, Tarif Borongan: {$data['print_slip']->tarif_borongan}, Date Range: $start_date_str to $end_date_str, Target ID: {$id}");
             }
 
             if (!$data['print_slip']) {
@@ -149,7 +200,7 @@ class Data_Gaji extends CI_Controller {
 
             $this->load->view('pegawai/cetak_slip_gaji_borongan', $data);
         } else {
-            // Slip bulanan
+            // Slip bulanan 
             $this->db->select('data_pegawai.nik, data_pegawai.nama_pegawai, data_jabatan.nama_jabatan, data_jabatan.gaji_pokok, data_jabatan.tj_transport, data_jabatan.uang_makan, data_kehadiran.alpha, data_kehadiran.bulan');
             $this->db->from('data_pegawai');
             $this->db->join('data_kehadiran', 'data_kehadiran.nik = data_pegawai.nik');

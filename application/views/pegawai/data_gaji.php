@@ -36,8 +36,9 @@
                                                 '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
                                                 '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
                                             ];
-                                            $bulan = $nama_bulan[$g->bulan_target] ?? $g->bulan_target;
-                                            echo "$bulan $g->tahun_target (Minggu ke-$g->mingguke)";
+                                            $bulan = str_pad($g->bulan_target, 2, '0', STR_PAD_LEFT);
+                                            $bulan_nama = $nama_bulan[$bulan] ?? $bulan;
+                                            echo "$bulan_nama $g->tahun_target (Minggu ke-$g->mingguke)";
                                             ?>
                                         <?php else : ?>
                                             <?php
@@ -70,7 +71,7 @@
                                     <td>
                                         <?php
                                         if ($is_borongan) {
-                                            $total_gaji = (($g->total_produksi ?? 0) * ($g->tarif_borongan ?? 0)) + ($g->gaji_pokok ?? 0) + ($g->tj_transport ?? 0) + ($g->uang_makan ?? 0) - $potongan_gaji;
+                                            $total_gaji = (($g->total_produksi ?? 0) * ($g->tarif_borongan ?? 0)) + ($g->tj_transport ?? 0) + ($g->uang_makan ?? 0) - $potongan_gaji;
                                         } else {
                                             $total_gaji = ($g->gaji_pokok ?? 0) + ($g->tj_transport ?? 0) + ($g->uang_makan ?? 0) - $potongan_gaji;
                                         }
@@ -88,7 +89,7 @@
                             <?php endforeach; ?>
                         <?php else : ?>
                             <tr>
-                                <td colspan="<?php echo $is_borongan ? 6 : 7; ?>" class="text-center">Data gaji tidak ditemukan.</td>
+                                <td colspan="<?php echo $is_borongan ? 6 : 7; ?>" class="text-center">Data gaji tidak ditemukan. Pastikan data produksi telah diinput oleh admin.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

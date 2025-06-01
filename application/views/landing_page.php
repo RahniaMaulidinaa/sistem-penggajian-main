@@ -55,9 +55,9 @@
                   <div class="col">
                      <div class="box">
                         <div>
-                           <h2>Penggajian <br> Karyawan</h2>
+                           <h2>Penggajian <br> pegawai</h2>
                         </div>
-                        <p>aplikasi ini dibuat untuk membantu perusahaan dalam proses penggajian karyawan</p>
+                        <p>aplikasi ini dibuat untuk membantu perusahaan dalam proses penggajian pegawai</p>
                      </div>
                   </div>
                   <div class="col headerImg" style="background-image: url('<?php echo base_url()?>assets/img/payroll.svg');"></div>
@@ -78,7 +78,7 @@
             <div class="text-center">
                <h2>Informasi Website</h2>
                <div class="subHeading">
-                  Berikut informasi singkat tentang website penggajian karyawan
+                  Berikut informasi singkat tentang website penggajian pegawai
                </div>
             </div>
 
@@ -111,7 +111,7 @@
                         <div class="body">
                            <div class="title">Tentang Website</div>
                            <div id="flip1">Read More</div>
-                           <div id="panel1">aplikasi ini dibuat untuk membantu perusahaan dalam proses penggajian karyawan</div>
+                           <div id="panel1">aplikasi ini dibuat untuk membantu perusahaan dalam proses penggajian pegawai</div>
                         </div>
                      </div>
                   </div>
@@ -143,7 +143,7 @@
                         <div class="body">
                            <div class="title">Halaman Admin</div>
                            <div id="flip2">Read More</div>
-                           <div id="panel2">Administrator dapat menggunakan website untuk mengelola data pada website, halaman administrator terdapat dashboard / informasi singkat mengenai data data, terdapat data karyawan untuk pengelolaan karyawan, terdapat data jabatan untuk pengelolaan jabatan, terdapat data transaksi yang memiliki sub menu data absensi, setting potongan gaji, data gaji, terdapat data laporan yang memiliki sub menu laporan absensi, laporan gaji, cetak slip gaji.</div>
+                           <div id="panel2">Administrator dapat menggunakan website untuk mengelola data pada website, halaman administrator terdapat dashboard / informasi singkat mengenai data data, terdapat data pegawai untuk pengelolaan pegawai, terdapat data jabatan untuk pengelolaan jabatan, terdapat data transaksi yang memiliki sub menu data kehadiran, setting potongan gaji, data gaji, terdapat data laporan yang memiliki sub menu laporan kehadiran, laporan gaji, cetak slip gaji.</div>
                         </div>
                      </div>
                   </div>
@@ -173,9 +173,9 @@
                      <div class="card">
                         <div class="CardImage"><img src="<?php echo base_url(); ?>assets/img/karyawan.svg"></div>
                         <div class="body">
-                           <div class="title">Halaman Karyawan</div>
+                           <div class="title">Halaman pegawai</div>
                            <div id="flip3">Read More</div>
-                           <div id="panel3">Halaman karyawan terdapat informasi tentang karyawan dan cetak slip gaji.</div>
+                           <div id="panel3">Halaman pegawai terdapat informasi tentang pegawai dan cetak slip gaji.</div>
                         </div>
                      </div>
                   </div>

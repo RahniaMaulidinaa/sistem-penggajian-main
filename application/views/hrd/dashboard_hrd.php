@@ -198,10 +198,10 @@
                             </div>
                             <div class="mt-4 text-center small">
                                 <span class="mr-2">
-                                    <i class="fas fa-circle text-primary"></i> Karyawan Tetap
+                                    <i class="fas fa-circle text-primary"></i> pegawai Tetap
                                 </span>
                                 <span class="mr-2">
-                                    <i class="fas fa-circle text-success"></i> Karyawan Tidak Tetap
+                                    <i class="fas fa-circle text-success"></i> pegawai Tidak Tetap
                                 </span>
                             </div>
                         </div>
@@ -256,11 +256,11 @@
         var myPieChart = new Chart(ctxPie, {
             type: 'doughnut',
             data: {
-                labels: ["Karyawan Tetap", "Karyawan Tidak Tetap"],
+                labels: ["pegawai Tetap", "pegawai Tidak Tetap"],
                 datasets: [{
                     data: [
-                        <?= $this->db->query("SELECT status FROM data_pegawai WHERE status='Karyawan Tetap'")->num_rows(); ?>,
-                        <?= $this->db->query("SELECT status FROM data_pegawai WHERE status='Karyawan Tidak Tetap'")->num_rows(); ?>
+                        <?= $this->db->query("SELECT status FROM data_pegawai WHERE status='pegawai Tetap'")->num_rows(); ?>,
+                        <?= $this->db->query("SELECT status FROM data_pegawai WHERE status='pegawai Tidak Tetap'")->num_rows(); ?>
                     ],
                     backgroundColor: ['#4e73df', '#1cc88a'],
                     hoverBackgroundColor: ['#2e59d9', '#17a673'],
