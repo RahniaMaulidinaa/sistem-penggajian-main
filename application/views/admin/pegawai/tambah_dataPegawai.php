@@ -67,8 +67,8 @@
 				<label>Status</label>
 				<select name="status" class="form-control">
 					<option value="">--Pilih Status--</option>
-					<option value="pegawai Tetap">pegawai Tetap</option>
-					<option value="pegawai Tidak Tetap">pegawai Tidak Tetap</option>
+					<option value="pegawai Tetap">Pegawai Tetap</option>
+					<option value="pegawai Tidak Tetap">Pegawai Tidak Tetap</option>
 				</select>
 				<?php echo form_error('status', '<div class="text-small text-danger"> </div>')?>
 			</div>

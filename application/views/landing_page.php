@@ -207,7 +207,7 @@
                         <div class="body">
                            <div class="title">Halaman HRD</div>
                            <div id="flip4">Read More</div>
-                           <div id="panel4">HRD dapat menggunakan website untuk Melihat laporan upah borongan dan bulanan.</div>
+                           <div id="panel4">HRD dapat menggunakan website untuk Melihat laporan gaji borongan dan bulanan.</div>
                         </div>
                      </div>
                   </div>

@@ -23,12 +23,12 @@
     </li>
     <li class="nav-item">
       <a href="<?= base_url('hrd/laporan_upah') ?>" class="nav-link text-white">
-        <i class="fas fa-file-invoice-dollar mr-2"></i> Laporan Upah Bulanan
+        <i class="fas fa-file-invoice-dollar mr-2"></i> Laporan Gaji Bulanan
       </a>
     </li>
     <li class="nav-item">
       <a href="<?= base_url('hrd/laporan_upah_borongan') ?>" class="nav-link text-white">
-        <i class="fas fa-clipboard-list mr-2"></i> Laporan Upah Borongan
+        <i class="fas fa-clipboard-list mr-2"></i> Laporan Gaji Borongan
       </a>
     </li>
     <li class="nav-item">

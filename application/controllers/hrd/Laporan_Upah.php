@@ -71,7 +71,7 @@ class Laporan_Upah extends CI_Controller {
                 '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
             ];
             $this->session->set_flashdata('pesan', '<div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>Data upah untuk bulan ' . (isset($nama_bulan[$bulan]) ? $nama_bulan[$bulan] : $bulan) . ' tahun ' . $tahun . ' tidak ditemukan!</strong>
+                <strong>Data Gaji untuk bulan ' . (isset($nama_bulan[$bulan]) ? $nama_bulan[$bulan] : $bulan) . ' tahun ' . $tahun . ' tidak ditemukan!</strong>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">×</span>
                 </button>

@@ -26,7 +26,7 @@ class Laporan_Upah_Borongan extends CI_Controller {
     }
 
     public function cetak_laporan_upah_borongan(){
-        $data['title'] = "Cetak Laporan Upah Pegawai Borongan";
+        $data['title'] = "Cetak Laporan Gaji Pegawai Borongan";
         if((isset($_POST['bulan']) && $_POST['bulan'] != '') && (isset($_POST['tahun']) && $_POST['tahun'] != '') && (isset($_POST['minggu']) && $_POST['minggu'] != '')){
             $bulan = $_POST['bulan'];
             $tahun = $_POST['tahun'];

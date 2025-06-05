@@ -27,7 +27,7 @@
 <body>
     <center>
         <h1>KONVEKSI KAMPOENG BUSANA</h1>
-        <h2>Daftar Upah Pegawai Borongan</h2>
+        <h2>Daftar Gaji Pegawai Borongan</h2>
         <hr>
     </center>
 
@@ -107,7 +107,7 @@
         </table>
     <?php } else { ?>
         <p style="text-align: center; color: red; margin-top: 20px;">
-            Data upah borongan untuk bulan <?php echo isset($nama_bulan[$bulan]) ? $nama_bulan[$bulan] : $bulan ?> tahun <?php echo isset($tahun) ? $tahun : date('Y') ?> minggu <?php echo isset($minggu) ? $minggu : 1 ?> tidak ditemukan.
+            Data Gaji borongan untuk bulan <?php echo isset($nama_bulan[$bulan]) ? $nama_bulan[$bulan] : $bulan ?> tahun <?php echo isset($tahun) ? $tahun : date('Y') ?> minggu <?php echo isset($minggu) ? $minggu : 1 ?> tidak ditemukan.
         </p>
     <?php } ?>
 
