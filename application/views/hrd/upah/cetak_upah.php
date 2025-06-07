@@ -27,7 +27,7 @@
 <body>
     <center>
         <h1>KONVEKSI KAMPOENG BUSANA</h1>
-        <h2>Laporan Upah Pegawai</h2>
+        <h2>Laporan Gaji Pegawai Bulanan</h2>
         <hr>
     </center>
 
@@ -91,7 +91,7 @@
         </table>
     <?php } else { ?>
         <p style="text-align: center; color: red; margin-top: 20px;">
-            Data upah untuk bulan <?php echo isset($nama_bulan[$bulan]) ? $nama_bulan[$bulan] : $bulan ?> tahun <?php echo isset($tahun) ? $tahun : date('Y') ?> tidak ditemukan.
+            Data gaji untuk bulan <?php echo isset($nama_bulan[$bulan]) ? $nama_bulan[$bulan] : $bulan ?> tahun <?php echo isset($tahun) ? $tahun : date('Y') ?> tidak ditemukan.
         </p>
     <?php } ?>
 

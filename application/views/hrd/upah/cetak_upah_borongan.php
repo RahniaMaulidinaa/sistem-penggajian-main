@@ -27,7 +27,7 @@
 <body>
     <center>
         <h1>KONVEKSI KAMPOENG BUSANA</h1>
-        <h2>Daftar Gaji Pegawai Borongan</h2>
+        <h2>Laporan Gaji Pegawai Borongan</h2>
         <hr>
     </center>
 

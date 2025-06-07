@@ -2,7 +2,7 @@
 <div class="container-fluid">
     <div class="card mx-auto" style="width: 35%">
         <div class="card-header bg-primary text-white text-center">
-            Filter Laporan Upah Pegawai
+            Filter Laporan Gaji Pegawai
         </div>
 
         <form method="POST" action="<?php echo base_url('hrd/laporan_upah/cetak_laporan_upah') ?>">
@@ -42,7 +42,7 @@
                     </div>
                 </div>
 
-                <button style="width: 100%" type="submit" class="btn btn-primary"><i class="fas fa-print"></i> Cetak Laporan Upah</button>
+                <button style="width: 100%" type="submit" class="btn btn-primary"><i class="fas fa-print"></i> Cetak Laporan Gaji</button>
             </div>
         </form>
     </div>
