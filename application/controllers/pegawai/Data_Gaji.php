@@ -3,223 +3,150 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Data_Gaji extends CI_Controller {
 
-    public function __construct() {
-        parent::__construct();
-        if ($this->session->userdata('hak_akses') != '2') {
-            $this->session->set_flashdata('pesan', '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Anda Belum Login!</strong>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-                </div>');
-            redirect('login');
-        }
-    }
+	public function __construct() {
+		parent::__construct();
+		$this->load->library('session');
+		if ($this->session->userdata('hak_akses') != '2') {
+			$this->session->set_flashdata('pesan', '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+				<strong>Anda Belum Login!</strong>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">×</span>
+				</button>
+				</div>');
+			redirect('login');
+		}
+	}
 
-    public function index() {
-        $data['title'] = "Data Gaji";
-        $nik = $this->session->userdata('nik');
-        $data['potongan'] = $this->ModelPenggajian->get_data('potongan_gaji')->result();
+	public function index()
+	{
+		$nik = $this->session->userdata('nik');
+		$data['title'] = "Data Gaji";
+		$data['potongan'] = $this->ModelPenggajian->get_data('potongan_gaji')->result();
 
-        // Cek jenis gaji pegawai
-        $this->db->select('data_jabatan.jenis_gaji');
-        $this->db->from('data_pegawai');
-        $this->db->join('data_jabatan', 'data_jabatan.nama_jabatan = data_pegawai.jabatan');
-        $this->db->where('data_pegawai.nik', $nik);
-        $row = $this->db->get()->row();
-        $data['is_borongan'] = isset($row->jenis_gaji) && $row->jenis_gaji == 'Borongan';
+		// 1. Cek jenis gaji pegawai berdasarkan nik
+		$this->db->select('p.nik, p.id_pegawai, p.nama_pegawai, p.jabatan, j.jenis_gaji');
+		$this->db->from('data_pegawai p');
+		$this->db->join('data_jabatan j', 'j.nama_jabatan = p.jabatan');
+		$this->db->where('p.nik', $nik);
+		$pegawai = $this->db->get()->row();
 
-        if ($data['is_borongan']) {
-            // Gaji borongan
-            $this->db->select('data_pegawai.nik, data_pegawai.nama_pegawai, data_pegawai.id_pegawai, data_jabatan.gaji_pokok, data_jabatan.tj_transport, data_jabatan.uang_makan, data_jabatan.tarif_borongan, target_mingguan.id, target_mingguan.target_mingguan, target_mingguan.bulan_target, target_mingguan.tahun_target, target_mingguan.mingguke, COALESCE(data_kehadiran.alpha, 0) as alpha');
-            $this->db->from('data_pegawai');
-            $this->db->join('data_jabatan', 'data_jabatan.nama_jabatan = data_pegawai.jabatan');
-            $this->db->join('target_mingguan', 'target_mingguan.nik_pegawai = data_pegawai.nik');
-            $this->db->join('data_kehadiran', 'data_kehadiran.nik = data_pegawai.nik AND data_kehadiran.bulan = CONCAT(LPAD(target_mingguan.bulan_target, 2, "0"), target_mingguan.tahun_target)', 'left');
-            $this->db->where('data_pegawai.nik', $nik);
-            $this->db->group_by('target_mingguan.id, target_mingguan.bulan_target, target_mingguan.tahun_target, target_mingguan.mingguke');
-            $this->db->order_by('target_mingguan.tahun_target DESC, target_mingguan.bulan_target DESC, target_mingguan.mingguke DESC');
-            $gaji_result = $this->db->get()->result();
+		if (!$pegawai) {
+			show_error('Data pegawai tidak ditemukan.');
+		}
 
-            // Tambahkan total_produksi dan filter hanya yang > 0
-            $data['gaji'] = [];
-            foreach ($gaji_result as $g) {
-                $bulan = str_pad($g->bulan_target, 2, '0', STR_PAD_LEFT);
-                $tahun = $g->tahun_target;
-                $minggu = $g->mingguke;
+		$jenis_gaji = $pegawai->jenis_gaji;
+		$data['jenis_gaji'] = $jenis_gaji;
 
-                // Hitung rentang tanggal minggu dengan lebih akurat
-                $first_day_of_month = new DateTime("$tahun-$bulan-01");
-                $start_date = clone $first_day_of_month;
-                $start_date->modify('+' . (($minggu - 1) * 7) . ' days');
-                $end_date = clone $start_date;
-                $end_date->modify('+6 days');
-                $last_day_of_month = (new DateTime("$tahun-$bulan-01"))->modify('last day of this month');
-                if ($end_date > $last_day_of_month) {
-                    $end_date = $last_day_of_month;
-                }
-
-                $start_date_str = $start_date->format('Y-m-d');
-                $end_date_str = $end_date->format('Y-m-d');
-
-                // Log id_pegawai untuk debug
-                log_message('info', "Checking id_pegawai: {$g->id_pegawai} for NIK: {$nik}");
-
-                // Ambil total produksi
-                $this->db->select('COALESCE(SUM(jumlah_unit), 0) as total_produksi');
-                $this->db->from('produksi_harian');
-                $this->db->where('id_pegawai', $g->id_pegawai);
-                $this->db->where("tanggal BETWEEN '$start_date_str' AND '$end_date_str'");
-                $produksi_query = $this->db->get();
-                $total_produksi = $produksi_query->row()->total_produksi;
-                $g->total_produksi = $total_produksi;
-
-                // Query terpisah untuk logging detail produksi
-                $this->db->select('tanggal, jumlah_unit');
-                $this->db->from('produksi_harian');
-                $this->db->where('id_pegawai', $g->id_pegawai);
-                $this->db->where("tanggal BETWEEN '$start_date_str' AND '$end_date_str'");
-                $produksi_detail = $this->db->get();
-
-                // Log detail produksi
-                if ($produksi_detail->num_rows() > 0) {
-                    foreach ($produksi_detail->result() as $row) {
-                        log_message('info', "Produksi ditemukan: id_pegawai: {$g->id_pegawai}, tanggal: {$row->tanggal}, jumlah_unit: {$row->jumlah_unit}");
-                    }
-                } else {
-                    log_message('info', "Tidak ada data produksi untuk id_pegawai: {$g->id_pegawai}, rentang: $start_date_str to $end_date_str");
-                }
-
-                // Logging untuk debug
-                log_message('info', "NIK: {$nik}, Periode: $bulan-$tahun Minggu ke-$minggu, Total Produksi: $total_produksi, Date Range: $start_date_str to $end_date_str, Target ID: {$g->id}");
-
-                // Hanya tambahkan entri jika total_produksi > 0
-                if ($total_produksi > 0) {
-                    $data['gaji'][] = $g;
-                } else {
-                    log_message('info', "Periode $bulan-$tahun Minggu ke-$minggu untuk NIK {$nik} tidak ditampilkan karena total_produksi = 0");
-                }
-            }
-
-            // Log jumlah periode yang ditampilkan
-            log_message('info', 'Jumlah periode gaji borongan untuk NIK ' . $nik . ' setelah filter (produksi > 0): ' . count($data['gaji']));
-        } else {
-            // Gaji bulanan (tetap tidak diubah)
-            $this->db->select('data_pegawai.nik, data_pegawai.nama_pegawai, data_jabatan.gaji_pokok, data_jabatan.tj_transport, data_jabatan.uang_makan, data_kehadiran.alpha, data_kehadiran.bulan, data_kehadiran.id_kehadiran');
-            $this->db->from('data_pegawai');
-            $this->db->join('data_kehadiran', 'data_kehadiran.nik = data_pegawai.nik');
-            $this->db->join('data_jabatan', 'data_jabatan.nama_jabatan = data_pegawai.jabatan');
-            $this->db->where('data_pegawai.nik', $nik);
-            $this->db->order_by('data_kehadiran.bulan DESC');
-            $data['gaji'] = $this->db->get()->result();
-        }
-
-        $this->load->view('template_pegawai/header', $data);
+		if ($jenis_gaji === 'Bulanan') {
+			// 2. Query untuk gaji bulanan
+			$this->db->select('data_pegawai.nik, data_pegawai.nama_pegawai, data_jabatan.gaji_pokok, data_jabatan.tj_transport, data_jabatan.uang_makan, data_kehadiran.alpha, data_kehadiran.bulan, data_kehadiran.id_kehadiran');
+			$this->db->from('data_pegawai');
+			$this->db->join('data_kehadiran', 'data_kehadiran.nik = data_pegawai.nik');
+			$this->db->join('data_jabatan', 'data_jabatan.nama_jabatan = data_pegawai.jabatan');
+			$this->db->where('data_pegawai.nik', $nik);
+			$this->db->order_by('data_kehadiran.bulan DESC');
+			$data['gaji'] = $this->db->get()->result();
+		} elseif ($jenis_gaji === 'Borongan') {
+			$this->db->select("p.nik, p.nama_pegawai, p.jabatan, j.jenis_gaji,
+			CONCAT(YEAR(ph.tanggal), '-', LPAD(MONTH(ph.tanggal), 2, '0'), '-Minggu ', CEIL(DAY(ph.tanggal)/7)) AS periode,
+			SUM(ph.jumlah_unit) AS total_produksi,
+			j.tarif_borongan AS tarif,
+			SUM(ph.jumlah_unit) * j.tarif_borongan AS total_gaji,
+			k.alpha AS alpha,
+			k.id_kehadiran");
+			$this->db->from('data_pegawai p');
+			$this->db->join('data_jabatan j', 'j.nama_jabatan = p.jabatan');
+			$this->db->join('produksi_harian ph', 'ph.id_pegawai = p.id_pegawai');
+			$this->db->join('data_kehadiran k', "k.nik = p.nik AND k.bulan = DATE_FORMAT(ph.tanggal, '%m%Y')", 'left');
+			$this->db->where('p.nik', $nik);
+			$this->db->group_by(['p.nik', 'periode', 'k.id_kehadiran']);
+			$data['gaji'] = $this->db->get()->result();
+		} else {
+			show_error('Jenis gaji tidak dikenali.');
+		}
+		$this->load->view('template_pegawai/header', $data);
         $this->load->view('template_pegawai/sidebar');
         $this->load->view('pegawai/data_gaji', $data);
         $this->load->view('template_pegawai/footer');
     }
 
-    public function cetak_slip($id) {
-        $data['title'] = 'Cetak Slip Gaji';
-        $nik = $this->session->userdata('nik');
-        $data['potongan'] = $this->ModelPenggajian->get_data('potongan_gaji')->result();
+	public function cetak_slip($id = null)
+	{
+		if (!$id) {
+			show_error('Parameter ID kehadiran tidak diberikan.');
+		}
 
-        // Cek jenis gaji
-        $this->db->select('data_jabatan.jenis_gaji');
-        $this->db->from('data_pegawai');
-        $this->db->join('data_jabatan', 'data_jabatan.nama_jabatan = data_pegawai.jabatan');
-        $this->db->where('data_pegawai.nik', $nik);
-        $row = $this->db->get()->row();
-        $data['is_borongan'] = isset($row->jenis_gaji) && $row->jenis_gaji == 'Borongan';
+		$nik = $this->session->userdata('nik');
+		$data['title'] = "Data Gaji";
+		$data['potongan'] = $this->ModelPenggajian->get_data('potongan_gaji')->result();
 
-        if ($data['is_borongan']) {
-            // Slip borongan
-            $this->db->select('data_pegawai.nik, data_pegawai.nama_pegawai, data_pegawai.id_pegawai, data_jabatan.nama_jabatan, data_jabatan.gaji_pokok, data_jabatan.tj_transport, data_jabatan.uang_makan, data_jabatan.tarif_borongan, target_mingguan.target_mingguan, target_mingguan.bulan_target, target_mingguan.tahun_target, target_mingguan.mingguke, COALESCE(data_kehadiran.alpha, 0) as alpha');
-            $this->db->from('data_pegawai');
-            $this->db->join('data_jabatan', 'data_jabatan.nama_jabatan = data_pegawai.jabatan');
-            $this->db->join('target_mingguan', 'target_mingguan.nik_pegawai = data_pegawai.nik');
-            $this->db->join('data_kehadiran', 'data_kehadiran.nik = data_pegawai.nik AND data_kehadiran.bulan = CONCAT(LPAD(target_mingguan.bulan_target, 2, "0"), target_mingguan.tahun_target)', 'left');
-            $this->db->where('data_pegawai.nik', $nik);
-            $this->db->where('target_mingguan.id', $id);
-            $this->db->group_by('target_mingguan.id, target_mingguan.bulan_target, target_mingguan.tahun_target, target_mingguan.mingguke');
-            $data['print_slip'] = $this->db->get()->row();
+		// Ambil data pegawai + jenis gaji
+		$this->db->select('p.nik, p.id_pegawai, p.nama_pegawai, p.jabatan, j.jenis_gaji');
+		$this->db->from('data_pegawai p');
+		$this->db->join('data_jabatan j', 'j.nama_jabatan = p.jabatan');
+		$this->db->where('p.nik', $nik);
+		$pegawai = $this->db->get()->row();
 
-            if ($data['print_slip']) {
-                // Hitung rentang tanggal
-                $bulan = str_pad($data['print_slip']->bulan_target, 2, '0', STR_PAD_LEFT);
-                $tahun = $data['print_slip']->tahun_target;
-                $minggu = $data['print_slip']->mingguke;
+		if (!$pegawai) {
+			show_error('Data pegawai tidak ditemukan.');
+		}
 
-                // Hitung rentang tanggal minggu dengan lebih akurat
-                $first_day_of_month = new DateTime("$tahun-$bulan-01");
-                $start_date = clone $first_day_of_month;
-                $start_date->modify('+' . (($minggu - 1) * 7) . ' days');
-                $end_date = clone $start_date;
-                $end_date->modify('+6 days');
-                $last_day_of_month = (new DateTime("$tahun-$bulan-01"))->modify('last day of this month');
-                if ($end_date > $last_day_of_month) {
-                    $end_date = $last_day_of_month;
-                }
+		$jenis_gaji = $pegawai->jenis_gaji;
+		$data['jenis_gaji'] = $jenis_gaji;
 
-                $start_date_str = $start_date->format('Y-m-d');
-                $end_date_str = $end_date->format('Y-m-d');
+		if ($jenis_gaji === 'Bulanan') {
+			// Ambil data kehadiran untuk slip bulanan
+			$this->db->select('p.nik, p.nama_pegawai, j.nama_jabatan, j.gaji_pokok, j.tj_transport, j.uang_makan, k.alpha, k.bulan');
+			$this->db->from('data_pegawai p');
+			$this->db->join('data_kehadiran k', 'k.nik = p.nik');
+			$this->db->join('data_jabatan j', 'j.nama_jabatan = p.jabatan');
+			$this->db->where('p.nik', $nik);
+			$this->db->where('k.id_kehadiran', $id);
+			$data['print_slip'] = $this->db->get()->row();
 
-                // Ambil total produksi
-                $this->db->select('COALESCE(SUM(jumlah_unit), 0) as total_produksi');
-                $this->db->from('produksi_harian');
-                $this->db->where('id_pegawai', $data['print_slip']->id_pegawai);
-                $this->db->where("tanggal BETWEEN '$start_date_str' AND '$end_date_str'");
-                $total_produksi_result = $this->db->get()->row();
-                $data['print_slip']->total_produksi = $total_produksi_result->total_produksi;
+			if (!$data['print_slip']) {
+				$this->session->set_flashdata('pesan', '<div class="alert alert-danger">Data slip gaji tidak ditemukan!</div>');
+				redirect('pegawai/data_gaji');
+			}
 
-                // Cek apakah total_produksi > 0 untuk slip
-                if ($data['print_slip']->total_produksi == 0) {
-                    $this->session->set_flashdata('pesan', '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Data slip gaji tidak dapat dicetak karena total produksi 0!</strong>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                        </button>
-                        </div>');
-                    redirect('pegawai/data_gaji');
-                }
+			$this->load->view('pegawai/cetak_slip_gaji', $data);
+		} else {
+			// Ambil data kehadiran untuk cari bulan produksi borongan
+			$this->db->where('id_kehadiran', $id);
+			$kehadiran = $this->db->get('data_kehadiran')->row();
 
-                // Debug
-                log_message('info', "Slip for NIK: {$data['print_slip']->nik}, Total Produksi: {$data['print_slip']->total_produksi}, Tarif Borongan: {$data['print_slip']->tarif_borongan}, Date Range: $start_date_str to $end_date_str, Target ID: {$id}");
-            }
+			if (!$kehadiran) {
+				show_error('Data kehadiran tidak ditemukan.');
+			}
 
-            if (!$data['print_slip']) {
-                $this->session->set_flashdata('pesan', '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Data slip gaji tidak ditemukan!</strong>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                    </button>
-                    </div>');
-                redirect('pegawai/data_gaji');
-            }
+			$bulan = $kehadiran->bulan; // format MMYYYY
+			$bulan_sql = substr($bulan, 0, 2); // MM
+			$tahun_sql = substr($bulan, 2, 4); // YYYY
 
-            $this->load->view('pegawai/cetak_slip_gaji_borongan', $data);
-        } else {
-            // Slip bulanan 
-            $this->db->select('data_pegawai.nik, data_pegawai.nama_pegawai, data_jabatan.nama_jabatan, data_jabatan.gaji_pokok, data_jabatan.tj_transport, data_jabatan.uang_makan, data_kehadiran.alpha, data_kehadiran.bulan');
-            $this->db->from('data_pegawai');
-            $this->db->join('data_kehadiran', 'data_kehadiran.nik = data_pegawai.nik');
-            $this->db->join('data_jabatan', 'data_jabatan.nama_jabatan = data_pegawai.jabatan');
-            $this->db->where('data_pegawai.nik', $nik);
-            $this->db->where('data_kehadiran.id_kehadiran', $id);
-            $data['print_slip'] = $this->db->get()->row();
+			// Slip borongan berdasarkan bulan kehadiran
+			$this->db->select("p.nik, p.nama_pegawai, p.jabatan, j.jenis_gaji,
+				CONCAT(YEAR(ph.tanggal), '-', LPAD(MONTH(ph.tanggal), 2, '0')) AS periode,
+				SUM(ph.jumlah_unit) AS total_produksi,
+				j.tarif_borongan AS tarif,
+				SUM(ph.jumlah_unit) * j.tarif_borongan AS total_gaji,
+				COUNT(k.id_kehadiran) AS total_kehadiran");
+			$this->db->from('data_pegawai p');
+			$this->db->join('data_jabatan j', 'j.nama_jabatan = p.jabatan');
+			$this->db->join('produksi_harian ph', 'ph.id_pegawai = p.id_pegawai');
+			$this->db->join('data_kehadiran k', 'k.nik = p.nik');
+			$this->db->where('p.nik', $nik);
+			$this->db->where('MONTH(ph.tanggal)', $bulan_sql);
+			$this->db->where('YEAR(ph.tanggal)', $tahun_sql);
+			$this->db->group_by(['p.nik', 'periode']);
+			$data['gaji'] = $this->db->get()->row();
 
-            if (!$data['print_slip']) {
-                $this->session->set_flashdata('pesan', '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Data slip gaji tidak ditemukan!</strong>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                    </button>
-                    </div>');
-                redirect('pegawai/data_gaji');
-            }
+			if (!$data['gaji']) {
+				$this->session->set_flashdata('pesan', '<div class="alert alert-danger">Data slip borongan tidak ditemukan!</div>');
+				redirect('pegawai/data_gaji');
+			}
 
-            $this->load->view('pegawai/cetak_slip_gaji', $data);
-        }
-    }
+			$this->load->view('pegawai/cetak_slip_gaji_borongan', $data);
+		}
+	}
 }
+

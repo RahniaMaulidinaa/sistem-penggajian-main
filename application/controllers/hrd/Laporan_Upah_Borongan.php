@@ -55,7 +55,7 @@ class Laporan_Upah_Borongan extends CI_Controller {
         $data['bulan'] = $bulan;
         $data['tahun'] = $tahun;
         $data['minggu'] = $minggu;
-        $data['potongan'] = $this->ModelPenggajian->get_data('potongan_gaji')->result();
+        // $data['potongan'] = $this->ModelPenggajian->get_data('potongan_gaji')->result();
         $data['cetak_gaji'] = $this->db->query("
             SELECT DISTINCT 
                 data_pegawai.nik, 
@@ -67,7 +67,6 @@ class Laporan_Upah_Borongan extends CI_Controller {
                 data_jabatan.tj_transport,
                 data_jabatan.uang_makan,
                 data_jabatan.tarif_borongan, 
-                target_mingguan.target_mingguan,
                 data_kehadiran.alpha,
                 COALESCE((
                     SELECT SUM(ph.jumlah_unit) 
@@ -83,12 +82,6 @@ class Laporan_Upah_Borongan extends CI_Controller {
                 GROUP BY nik, bulan
             ) data_kehadiran ON data_kehadiran.nik = data_pegawai.nik
             INNER JOIN data_jabatan ON data_jabatan.nama_jabatan = data_pegawai.jabatan
-            LEFT JOIN (
-                SELECT nik_pegawai, bulan_target, tahun_target, mingguke, MAX(target_mingguan) as target_mingguan
-                FROM target_mingguan
-                WHERE bulan_target = '$bulan' AND tahun_target = '$tahun' AND mingguke = '$minggu'
-                GROUP BY nik_pegawai, bulan_target, tahun_target, mingguke
-            ) target_mingguan ON target_mingguan.nik_pegawai = data_pegawai.nik
             WHERE data_jabatan.jenis_gaji = 'Borongan'
             ORDER BY data_pegawai.nama_pegawai ASC
         ")->result();

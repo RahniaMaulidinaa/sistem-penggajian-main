@@ -75,41 +75,44 @@
                 <th class="text-center">Potongan (Alpha)</th>
                 <th class="text-center">Total Upah</th>
             </tr>
-            <?php 
-            $no = 1;
-            foreach ($cetak_gaji as $g) : 
-                $potongan_gaji = 0;
-                if (!empty($potongan) && isset($potongan[0]->jml_potongan)) {
-                    $potongan_gaji = ($g->alpha ?? 0) * $potongan[0]->jml_potongan;
-                }
-                $total_produksi = $g->total_produksi ?? 0;
-                $tarif_borongan = $g->tarif_borongan ?? 0;
-                $gaji_pokok = $g->gaji_pokok ?? 0;
-                $tj_transport = $g->tj_transport ?? 0;
-                $uang_makan = $g->uang_makan ?? 0;
-                $total_upah = ($total_produksi * $tarif_borongan) + $gaji_pokok + $tj_transport + $uang_makan - $potongan_gaji;
-            ?>
-            <tr>
-                <td><?php echo $no++ ?></td>
-                <td><?php echo $g->nik ?></td>
-                <td><?php echo $g->nama_pegawai ?></td>
-                <td><?php echo $g->jenis_kelamin ?></td>
-                <td><?php echo $g->nama_jabatan ?></td>
-                <td>Rp. <?php echo number_format($gaji_pokok, 0, ',', '.') ?></td>
-                <td>Rp. <?php echo number_format($tj_transport, 0, ',', '.') ?></td>
-                <td>Rp. <?php echo number_format($uang_makan, 0, ',', '.') ?></td>
-                <td><?php echo $total_produksi ?> unit</td>
-                <td>Rp. <?php echo number_format($tarif_borongan, 0, ',', '.') ?></td>
-                <td>Rp. <?php echo number_format($potongan_gaji, 0, ',', '.') ?></td>
-                <td>Rp. <?php echo number_format($total_upah, 0, ',', '.') ?></td>
-            </tr>
-            <?php endforeach; ?>
-        </table>
-    <?php } else { ?>
-        <p style="text-align: center; color: red; margin-top: 20px;">
-            Data Gaji borongan untuk bulan <?php echo isset($nama_bulan[$bulan]) ? $nama_bulan[$bulan] : $bulan ?> tahun <?php echo isset($tahun) ? $tahun : date('Y') ?> minggu <?php echo isset($minggu) ? $minggu : 1 ?> tidak ditemukan.
-        </p>
-    <?php } ?>
+			<?php 
+$no = 1;
+foreach ($cetak_gaji as $g) : 
+    $potongan_gaji = 0;
+    if (!empty($potongan) && isset($potongan[0]->jml_potongan)) {
+        $potongan_gaji = ($g->alpha ?? 0) * $potongan[0]->jml_potongan;
+    }
+    $total_produksi = $g->total_produksi ?? 0;
+    $tarif_borongan = $g->tarif_borongan ?? 0;
+    $gaji_pokok = $g->gaji_pokok ?? 0;
+    $tj_transport = $g->tj_transport ?? 0;
+    $uang_makan = $g->uang_makan ?? 0;
+
+    $total_upah = ($total_produksi * $tarif_borongan) + $gaji_pokok + $tj_transport + $uang_makan - $potongan_gaji;
+
+    // Hanya tampilkan jika total gaji lebih dari 0
+    if ($total_upah > 0):
+?>
+<tr>
+    <td><?php echo $no++ ?></td>
+    <td><?php echo $g->nik ?></td>
+    <td><?php echo $g->nama_pegawai ?></td>
+    <td><?php echo $g->jenis_kelamin ?></td>
+    <td><?php echo $g->nama_jabatan ?></td>
+    <td>Rp. <?php echo number_format($gaji_pokok, 0, ',', '.') ?></td>
+    <td>Rp. <?php echo number_format($tj_transport, 0, ',', '.') ?></td>
+    <td>Rp. <?php echo number_format($uang_makan, 0, ',', '.') ?></td>
+    <td><?php echo $total_produksi ?> unit</td>
+    <td>Rp. <?php echo number_format($tarif_borongan, 0, ',', '.') ?></td>
+    <td>Rp. <?php echo number_format($potongan_gaji, 0, ',', '.') ?></td>
+    <td>Rp. <?php echo number_format($total_upah, 0, ',', '.') ?></td>
+</tr>
+<?php 
+    endif;
+endforeach; 
+?>
+		</table>
+	<?php } ?>
 
     <script type="text/javascript">
         window.print();

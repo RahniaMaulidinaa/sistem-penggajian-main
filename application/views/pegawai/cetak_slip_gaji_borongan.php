@@ -1,223 +1,205 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title><?php echo $title?></title>
-    <style type="text/css">
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            color: #333;
-            margin: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1 {
-            font-size: 24px;
-            text-align: center;
-            color: #003087;
-            margin-bottom: 5px;
-        }
-        h2 {
-            font-size: 18px;
-            text-align: center;
-            color: #003087;
-            margin-top: 0;
-        }
-        hr {
-            width: 60%;
-            border: 2px solid #003087;
-            margin: 15px auto;
-        }
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .info-table td {
-            padding: 8px;
-            border: 1px solid #ddd;
-        }
-        .info-table td:first-child {
-            width: 20%;
-            font-weight: bold;
-            background-color: #f8f9fa;
-        }
-        .main-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .main-table th {
-            background-color: #e3f2fd;
-            color: #003087;
-            padding: 10px;
-            border: 1px solid #bcd4e6;
-            font-weight: bold;
-            text-align: left;
-        }
-        .main-table td {
-            padding: 10px;
-            border: 1px solid #bcd4e6;
-            text-align: left;
-        }
-        .main-table .total {
-            background-color: #f0f7ff;
-            font-weight: bold;
-            color: #003087;
-        }
-        .main-table .total td {
-            padding: 12px;
-        }
-        .signature-table {
-            width: 100%;
-            margin-top: 50px;
-            border-collapse: collapse;
-        }
-        .signature-table td {
-            vertical-align: top;
-            padding: 10px;
-            text-align: center;
-        }
-        .signature-table .pegawai {
-            width: 50%;
-        }
-        .signature-table .finance {
-            width: 50%;
-        }
-        .signature-table p {
-            margin: 5px 0;
-        }
-        .signature-table .signature-line {
-            border-bottom: 1px solid #333;
-            width: 150px;
-            margin: 10px auto;
-        }
-        @media print {
-            body {
-                margin: 0;
-            }
-            .container {
-                max-width: 100%;
-            }
-        }
-    </style>
+	<title>Slip Gaji Borongan</title>
+	<style type="text/css">
+		body {
+			font-family: Arial, Helvetica, sans-serif;
+			color: #333;
+			margin: 20px;
+		}
+
+		.container {
+			max-width: 800px;
+			margin: 0 auto;
+		}
+
+		h1 {
+			font-size: 24px;
+			text-align: center;
+			color: #003087;
+			margin-bottom: 5px;
+		}
+
+		h2 {
+			font-size: 18px;
+			text-align: center;
+			color: #003087;
+			margin-top: 0;
+		}
+
+		hr {
+			width: 60%;
+			border: 2px solid #003087;
+			margin: 15px auto;
+		}
+
+		.info-table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-bottom: 20px;
+		}
+
+		.info-table td {
+			padding: 8px;
+			border: 1px solid #ddd;
+		}
+
+		.info-table td:first-child {
+			width: 30%;
+			font-weight: bold;
+			background-color: #f8f9fa;
+		}
+
+		.main-table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 20px;
+		}
+
+		.main-table th {
+			background-color: #e3f2fd;
+			color: #003087;
+			padding: 10px;
+			border: 1px solid #bcd4e6;
+			font-weight: bold;
+			text-align: left;
+		}
+
+		.main-table td {
+			padding: 10px;
+			border: 1px solid #bcd4e6;
+			text-align: left;
+		}
+
+		.main-table .total {
+			background-color: #f0f7ff;
+			font-weight: bold;
+			color: #003087;
+		}
+
+		.signature-table {
+			width: 100%;
+			margin-top: 50px;
+			border-collapse: collapse;
+		}
+
+		.signature-table td {
+			vertical-align: top;
+			padding: 10px;
+			text-align: center;
+		}
+
+		.signature-table .pegawai,
+		.signature-table .hrd {
+			width: 50%;
+		}
+
+		.signature-line {
+			border-bottom: 1px solid #333;
+			width: 150px;
+			margin: 10px auto;
+		}
+
+		@media print {
+			body {
+				margin: 0;
+			}
+
+			.container {
+				max-width: 100%;
+			}
+		}
+	</style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>KONVEKSI KAMPOENG BUSANA</h1>
-        <h2>Slip Gaji Pegawai borongan</h2>
-        <hr>
+	<div class="container">
+		<h1>KONVEKSI KAMPOENG BUSANA</h1>
+		<h2>Slip Gaji Pegawai Borongan</h2>
+		<hr>
 
-        <?php if ($print_slip) : ?>
-        <table class="info-table">
-            <tr>
-                <td>NIK</td>
-                <td><?php echo $print_slip->nik ?? '-' ?></td>
-            </tr>
-            <tr>
-                <td>Nama Pegawai</td>
-                <td><?php echo $print_slip->nama_pegawai ?? '-' ?></td>
-            </tr>
-            <tr>
-                <td>Jabatan</td>
-                <td><?php echo $print_slip->nama_jabatan ?? '-' ?></td>
-            </tr>
-            <tr>
-                <td>Bulan</td>
-                <td>
-                    <?php
-                    $nama_bulan = [
-                        '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
-                        '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
-                        '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
-                    ];
-                    echo isset($nama_bulan[$print_slip->bulan_target]) ? $nama_bulan[$print_slip->bulan_target] : ($print_slip->bulan_target ?: '-');
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td>Tahun</td>
-                <td><?php echo $print_slip->tahun_target ?? '-' ?></td>
-            </tr>
-            <tr>
-                <td>Minggu</td>
-                <td><?php echo $print_slip->mingguke ?? '-' ?></td>
-            </tr>
-        </table>
+		<table class="info-table">
+			<tr>
+				<td>NIK</td>
+				<td><?= $gaji->nik ?></td>
+			</tr>
+			<tr>
+				<td>Nama Pegawai</td>
+				<td><?= $gaji->nama_pegawai ?></td>
+			</tr>
+			<tr>
+				<td>Jabatan</td>
+				<td><?= $gaji->jabatan ?></td>
+			</tr>
+			<tr>
+				<td>Jenis Gaji</td>
+				<td><?= $gaji->jenis_gaji ?></td>
+			</tr>
+			<tr>
+				<td>Periode</td>
+				<td>
+					<?php
+					$periode = explode('-', $gaji->periode);
+					$bulan = $periode[1] ?? '';
+					$tahun = $periode[0] ?? '';
+					$nama_bulan = [
+						'01' => 'Januari',
+						'02' => 'Februari',
+						'03' => 'Maret',
+						'04' => 'April',
+						'05' => 'Mei',
+						'06' => 'Juni',
+						'07' => 'Juli',
+						'08' => 'Agustus',
+						'09' => 'September',
+						'10' => 'Oktober',
+						'11' => 'November',
+						'12' => 'Desember'
+					];
+					echo $nama_bulan[$bulan] . ' ' . $tahun;
+					?>
+				</td>
+			</tr>
+		</table>
 
-        <table class="main-table">
-            <tr>
-                <th colspan="2">Pendapatan</th>
-                <th>Potongan</th>
-            </tr>
-            <tr>
-                <td>Total Produksi</td>
-                <td><?php echo $print_slip->total_produksi ?? 0 ?> unit</td>
-                <td rowspan="2">
-                    Potongan (Alpha: <?php echo $print_slip->alpha ?? 0 ?> hari): 
-                    <?php 
-                    $potongan_gaji = 0;
-                    if (!empty($potongan) && isset($potongan[0]->jml_potongan)) {
-                        $potongan_gaji = ($print_slip->alpha ?? 0) * $potongan[0]->jml_potongan;
-                    }
-                    ?>
-                    Rp. <?php echo number_format($potongan_gaji, 0, ',', '.') ?>
-                </td>
-            </tr>
-            <tr>
-                <td>Tarif borongan</td>
-                <td>Rp. <?php echo number_format($print_slip->tarif_borongan ?? 0, 0, ',', '.') ?></td>
-            </tr>
-            <tr>
-                <td>Gaji Pokok</td>
-                <td>Rp. <?php echo number_format($print_slip->gaji_pokok ?? 0, 0, ',', '.') ?></td>
-            </tr>
-            <tr>
-                <td>Tj. Transport</td>
-                <td>Rp. <?php echo number_format($print_slip->tj_transport ?? 0, 0, ',', '.') ?></td>
-            </tr>
-            <tr>
-                <td>Uang Makan</td>
-                <td>Rp. <?php echo number_format($print_slip->uang_makan ?? 0, 0, ',', '.') ?></td>
-            </tr>
-            <tr class="total">
-                <td>Total Pendapatan</td>
-                <td colspan="2">
-                    <?php 
-                    $total_produksi = $print_slip->total_produksi ?? 0;
-                    $tarif = $print_slip->tarif_borongan ?? 0;
-                    $gaji_pokok = $print_slip->gaji_pokok ?? 0;
-                    $tj_transport = $print_slip->tj_transport ?? 0;
-                    $uang_makan = $print_slip->uang_makan ?? 0;
-                    $total_gaji = ($total_produksi * $tarif) + $gaji_pokok + $tj_transport + $uang_makan - $potongan_gaji;
-                    ?>
-                    Rp. <?php echo number_format($total_gaji, 0, ',', '.') ?>
-                </td>
-            </tr>
-        </table>
+		<table class="main-table">
+			<tr>
+				<th>Total Produksi</th>
+				<th>Tarif per Unit</th>
+				<th>Total Gaji</th>
+			</tr>
+			<tr>
+				<td><?= $gaji->total_produksi ?> Unit</td>
+				<td>Rp. <?= number_format($gaji->tarif, 0, ',', '.') ?></td>
+				<td>Rp. <?= number_format($gaji->total_gaji, 0, ',', '.') ?></td>
+			</tr>
+			<tr class="total">
+				<td colspan="2">Total Gaji Diterima</td>
+				<td>Rp. <?= number_format($gaji->total_gaji, 0, ',', '.') ?></td>
+			</tr>
+		</table>
 
-        <table class="signature-table">
-            <tr>
-                <td class="pegawai">
-                    <p>Pegawai</p>
-                    <br><br>
-                    <p class="font-weight-bold"><?php echo $print_slip->nama_pegawai ?? '-' ?></p>
-                </td>
-                <td class="finance">
-                    <p>Bandung, <?php echo date('d M Y') ?> <br> Finance</p>
-                    <br><br>
-                    <p class="signature-line"></p>
-                </td>
-            </tr>
-        </table>
-        <?php else : ?>
-        <p class="text-center">Data slip gaji tidak ditemukan.</p>
-        <?php endif; ?>
-    </div>
+		<table class="signature-table">
+			<tr>
+				<td class="pegawai">
+					<p>Pegawai</p>
+					<br><br>
+					<p><strong><?= $gaji->nama_pegawai ?></strong></p>
+				</td>
+				<td class="hrd">
+					<p>Bandung, <?= date('d M Y') ?> <br> Finance</p>
+					<br><br>
+					<div class="signature-line"></div>
+				</td>
+			</tr>
+		</table>
+	</div>
 
-    <script type="text/javascript">
-        window.print();
-    </script>
+	<script>
+		window.print();
+	</script>
 </body>
+
 </html>
