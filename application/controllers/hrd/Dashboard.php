@@ -13,32 +13,27 @@ class Dashboard extends CI_Controller {
         }
     }
 
-    public function index() {
-        $pegawai = $this->db->query("SELECT * FROM data_pegawai");
-        $hrd = $this->db->query("SELECT * FROM data_pegawai WHERE jabatan = 'HRD'");
-        $jabatan = $this->db->query("SELECT * FROM data_jabatan");
-        $kehadiran = $this->db->query("SELECT * FROM data_kehadiran");
+    
+public function index()
+{
+    $data['title'] = "Dashboard HRD";
 
-        $data['title'] = "Dashboard HRD";
-        $data['pegawai'] = $pegawai->num_rows();
-        $data['hrd'] = $hrd->num_rows();
-        $data['jabatan'] = $jabatan->num_rows();
-        $data['kehadiran'] = $kehadiran->num_rows();
+    $data['pegawai'] = $this->db->count_all('data_pegawai');
+    $data['hrd'] = $this->db->where('jabatan', 'HRD')->count_all_results('data_pegawai');
+    $data['jabatan'] = $this->db->count_all('data_jabatan');
+    $data['kehadiran'] = $this->db->count_all('data_kehadiran');
 
-        $this->load->view('template_hrd/header', $data);
-        $this->load->view('template_hrd/sidebar');
-        $this->load->view('hrd/dashboard_hrd', $data);
-        $this->load->view('template_hrd/footer');
-    }
+    $data['jml_laki'] = $this->db->where('jenis_kelamin', 'Laki-laki')->count_all_results('data_pegawai');
+    $data['jml_perempuan'] = $this->db->where('jenis_kelamin', 'Perempuan')->count_all_results('data_pegawai');
 
-    public function detail_pegawai() {
-        $data['title'] = "Detail Pegawai";
-        $data['pegawai'] = $this->db->get('data_pegawai')->result();
-        $this->load->view('template_hrd/header', $data);
-        $this->load->view('template_hrd/sidebar');
-        $this->load->view('hrd/detail_pegawai', $data);
-        $this->load->view('template_hrd/footer');
-    }
+    $data['pegawai_tetap'] = $this->db->where('status', 'pegawai Tetap')->count_all_results('data_pegawai');
+    $data['pegawai_tidak_tetap'] = $this->db->where('status', 'pegawai Tidak Tetap')->count_all_results('data_pegawai');
+
+    $this->load->view('template_hrd/header', $data);
+    $this->load->view('template_hrd/sidebar');
+    $this->load->view('hrd/dashboard_hrd', $data);
+    $this->load->view('template_hrd/footer');
+}
 
     public function detail_hrd() {
         $data['title'] = "Detail HRD";
