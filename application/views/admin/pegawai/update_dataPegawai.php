@@ -72,6 +72,9 @@
 					<option value="<?php echo $p->status?>"><?php echo $p->status?></option>
 					<option value="pegawai Tetap">pegawai Tetap</option>
 					<option value="pegawai Tidak Tetap">pegawai Tidak Tetap</option>
+					<option value="Resign">Resign</option>
+					<option value="PHK">PHK</option>
+					<option value="Pensiun">Pensiun</option>
 				</select>
 				<?php echo form_error('status', '<div class="text-small text-danger"> </div>')?>
 			</div>

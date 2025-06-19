@@ -87,7 +87,6 @@
                 <td><?php echo $p->jumlah_unit; ?></td>
                 <td>
                   <a href="<?php echo base_url('admin/produksi_harian/edit/' . $p->id_produksi); ?>" class="btn btn-warning btn-sm">Edit</a>
-                  <a href="<?php echo base_url('admin/produksi_harian/hapus/' . $p->id_produksi); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?');">Hapus</a>
                 </td>
               </tr>
             <?php } ?>

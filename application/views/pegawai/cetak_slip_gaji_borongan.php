@@ -189,7 +189,7 @@
 					<p><strong><?= $gaji->nama_pegawai ?></strong></p>
 				</td>
 				<td class="hrd">
-					<p>Bandung, <?= date('d M Y') ?> <br> Finance</p>
+					<p>Bandung, <?= date('d M Y') ?> <br> Bagian Keuangan</p>
 					<br><br>
 					<div class="signature-line"></div>
 				</td>

@@ -878,7 +878,7 @@ files:
     - save
     - sticky-note
   label: Files
-finance:
+Bagian Keuangan:
   icons:
     - balance-scale
     - balance-scale-left
@@ -907,7 +907,7 @@ finance:
     - receipt
     - stamp
     - wallet
-  label: Finance
+  label: Bagian Keuangan
 fitness:
   icons:
     - bicycle

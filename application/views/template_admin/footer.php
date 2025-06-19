@@ -72,7 +72,10 @@ var myBarChart = new Chart(ctx, {
     labels: ["Laki - Laki", "Perempuan"],
     datasets : [{
       label: "Berdasarkan Jenis Kelamin",
-      backgroundColor: 'rgb(23, 125, 255)',
+      backgroundColor: [
+         'rgb(23, 125, 255)', // Laki-laki
+         'rgb(255, 99, 132)' // Perempuan
+      ],
       borderColor: 'rgb(23, 125, 255)',
       data: [<?php echo $this->db->query("select jenis_kelamin from data_pegawai where jenis_kelamin='Laki-laki'")->num_rows(); ?>,
       <?php echo $this->db->query("select jenis_kelamin from data_pegawai where jenis_kelamin='Perempuan'")->num_rows(); ?>,

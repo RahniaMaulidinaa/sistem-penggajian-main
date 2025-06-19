@@ -227,8 +227,14 @@
                         <?= $this->db->query("SELECT COUNT(*) as jml FROM data_pegawai WHERE jenis_kelamin='Laki-laki'")->row()->jml ?>,
                         <?= $this->db->query("SELECT COUNT(*) as jml FROM data_pegawai WHERE jenis_kelamin='Perempuan'")->row()->jml ?>
                     ],
-                    backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)'],
-                    borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.6)',  // laki-laki
+                         'rgba(235, 54, 139, 0.6)',  // perempuan (pink)
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(235, 54, 139, 1)',
+                ],
                     borderWidth: 1
                 }]
             },
@@ -240,6 +246,7 @@
                         beginAtZero: true,
                         ticks: {
                             stepSize: 0.5,
+                            stepSize: 0.1,
                             precision: 1
                         },
                         suggestedMax: 5

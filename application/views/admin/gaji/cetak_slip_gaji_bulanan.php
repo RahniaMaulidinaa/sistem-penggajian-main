@@ -82,7 +82,7 @@
         .signature-table .pegawai {
             width: 50%;
         }
-        .signature-table .finance {
+        .signature-table .Bagian Keuangan {
             width: 50%;
         }
         .signature-table p {
@@ -179,8 +179,8 @@
                     <br><br>
                     <p class="font-weight-bold"><?php echo $slip_gaji->nama_pegawai ?></p>
                 </td>
-                <td class="finance">
-                    <p>Bandung, <?php echo date('d M Y') ?> <br> Finance</p>
+                <td class="Bagian Keuangan">
+                    <p>Bandung, <?php echo date('d M Y') ?> <br> Bagian Keuangan</p>
                     <br><br>
                     <p class="signature-line"></p>
                 </td>
