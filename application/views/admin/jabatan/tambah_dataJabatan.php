@@ -37,6 +37,22 @@
 				<?php echo form_error('uang_makan', '<div class="text-small text-danger"> </div>')?>
 			</div>
 
+			<div class="form-group">
+				<label>Tarif Borongan</label>
+				<input type="number" name="tarif_borongan" class="form-control">
+				<?php echo form_error('tarif_borongan', '<div class="text-small text-danger"> </div>')?>
+
+			<div class="form-group">
+	<label>Jenis Gaji</label>
+	<select name="jenis_gaji" class="form-control">
+		<option value="">-- Pilih Jenis Gaji --</option>
+		<option value="Bulanan">Bulanan</option>
+		<option value="Borongan">Borongan</option>
+	</select>
+	<?php echo form_error('jenis_gaji', '<div class="text-small text-danger"> </div>')?>
+</div>
+
+
 			<button type="submit" class="btn btn-success" >Simpan</button>
 			<button type="reset" class="btn btn-danger" >Reset</button>
 			<a href="<?php echo base_url('admin/data_jabatan')?>" class="btn btn-warning">Kembali</a>

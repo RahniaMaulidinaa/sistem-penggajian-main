@@ -31,6 +31,7 @@
 	<div id="sidebar" class="position-fixed">
 		<ul class="nav flex-column pt-4">
 			<li class="nav-item"><a href="<?= base_url('hrd/dashboard') ?>" class="nav-link text-white"><i class="fas fa-tachometer-alt mr-2"></i> Dashboard HRD</a></li>
+			<li class="nav-item"><a href="<?= base_url('hrd/data_gaji') ?>" class="nav-link text-white"><i class="fas fa-users-cog mr-2"></i> Data Gaji</a></li>
 			<li class="nav-item"><a href="<?= base_url('hrd/laporan_upah') ?>" class="nav-link text-white"><i class="fas fa-file-invoice-dollar mr-2"></i> Laporan Upah Bulanan</a></li>
 			<li class="nav-item"><a href="<?= base_url('hrd/laporan_upah_borongan') ?>" class="nav-link text-white"><i class="fas fa-clipboard-list mr-2"></i> Laporan Upah Borongan</a></li>
 			<li class="nav-item"><a href="<?= base_url('hrd/ganti_password') ?>" class="nav-link text-white"><i class="fas fa-key mr-2"></i> Ganti Password</a></li>
