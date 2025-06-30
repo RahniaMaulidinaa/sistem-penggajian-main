@@ -22,6 +22,8 @@
       </a>
     </li>
     <li class="nav-item">
+      <a href="<?= base_url('hrd/data_gaji') ?>" class="nav-link text-white">
+      <i class="fas fa-tachometer-alt mr-2"></i> Data Gaji
       <a href="<?= base_url('hrd/laporan_upah') ?>" class="nav-link text-white">
         <i class="fas fa-file-invoice-dollar mr-2"></i> Laporan Gaji Bulanan
       </a>

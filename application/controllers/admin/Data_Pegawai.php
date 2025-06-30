@@ -19,13 +19,14 @@ class Data_Pegawai extends CI_Controller {
 	public function index()
 	{
 		$data['title'] = "Data Pegawai";
-		$data['pegawai'] = $this->ModelPenggajian->get_data('data_pegawai')->result();
-
+		$data['pegawai'] = $this->ModelPenggajian->get_data_pegawai_with_jabatan()->result();
+	
 		$this->load->view('template_admin/header', $data);
 		$this->load->view('template_admin/sidebar');
 		$this->load->view('admin/pegawai/data_pegawai', $data);
 		$this->load->view('template_admin/footer');
 	}
+	
 
 	public function tambah_data() 
 	{

@@ -56,6 +56,16 @@ class ModelPenggajian extends CI_model {
 	return $this->db->get()->result();
 }
 
+public function get_data_pegawai_with_jabatan()
+{
+    $this->db->select('data_pegawai.*, data_jabatan.nama_jabatan, data_jabatan.gaji_pokok, data_jabatan.tj_transport, data_jabatan.uang_makan, data_jabatan.jenis_gaji, data_jabatan.tarif_borongan');
+    $this->db->from('data_pegawai');
+    $this->db->join('data_jabatan', 'data_pegawai.jabatan = data_jabatan.nama_jabatan', 'left');
+    return $this->db->get();
+}
+
+
+
     }
 
 
